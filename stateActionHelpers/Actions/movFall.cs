@@ -1,0 +1,73 @@
+﻿using UnityEngine;
+using System.Collections;
+
+public class movFall : StateActionBase
+{
+
+    private Vector2		m_fallSpeed;
+    private float       m_yEndFall;
+	private float       m_rotateSpeed; // on z axis
+    private float       m_curRotation;
+    private Vector2     m_startVel;
+    private Vector2     m_curVel;
+    private Transform   m_obj;
+
+    private Vector3     m_rotation;
+
+
+	
+    private bool m_started;
+
+    public movFall()
+    {
+       // User needs to initialize it with the full contructor or setup before this action can be used.
+    }
+
+    public movFall(Transform obj, Vector2 startVel, float fallSpeed, float bottomY, float rotationSpeed)
+	{
+        setup(obj, startVel, fallSpeed, bottomY, rotationSpeed);
+        
+	}
+
+
+	public void setup(Transform obj, Vector2 startVel, float fallSpeed, float bottomY, float rotationSpeed)
+	{
+		
+		m_obj               = obj;
+		m_fallSpeed         = Vector2.up * fallSpeed;
+        m_yEndFall          = bottomY;
+        m_rotateSpeed       = rotationSpeed;
+        m_curRotation       = 0;
+        m_startVel          = startVel;
+        m_curVel            = m_startVel;
+        m_rotation          = Vector3.zero;
+		
+        reset();
+		
+	}
+
+	
+	public override void update()
+	{
+        m_curRotation   += (Time.deltaTime * m_rotateSpeed);
+        m_rotation.z    = m_curRotation;
+
+        m_obj.rotation = Quaternion.Euler(m_rotation);
+
+        
+        Vector2 curPos = m_obj.position;
+        m_curVel += m_fallSpeed * Time.deltaTime;
+        //curPos += m_curVel;
+        curPos += (m_curVel * Time.deltaTime);
+        m_obj.position = curPos;
+
+        if (curPos.y < m_yEndFall)
+        {
+            m_curVel    = m_startVel;
+            m_rotation  = Vector3.zero;
+            m_done      = true;
+        }
+
+       
+    }
+}
