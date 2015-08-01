@@ -35,7 +35,7 @@ public class TargetFallItemState : StateBaseWithActions<AttackItem>
     {
         if (m_curAction == (int)ActionEnum.AE_HIT)
         {
-            SceneManager.instance.getEnemyTarget().killAttached();
+            SceneManager.instance.getEnemyTarget().killAttached(m_refObj.getType());
         }
         else if (m_curAction == (int)ActionEnum.AE_GODOWN)
         {

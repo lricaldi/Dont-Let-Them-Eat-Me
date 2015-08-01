@@ -13,8 +13,6 @@ public class LaunchItemState : StateBaseWithActions<AttackItem>
 
     public override void initState()
     {
-        //Debug.Log("LaunchItemState INIT");
-
         m_curAction = (int)ActionEnum.AE_SHOT_UP;
         ((movAtoB)m_actions[(int)ActionEnum.AE_SHOT_UP]).setup(m_refObj.gameObject, 
                                                                 m_refObj.GetComponent<Transform>().position, 
@@ -27,13 +25,23 @@ public class LaunchItemState : StateBaseWithActions<AttackItem>
  
     public override void endState()
     {
+        m_refObj.setLayer("default", 2);
+        
+
         if(SceneManager.instance.getEnemyTarget().getNumAttachedEnemies() > 0)
         {
             m_refObj.setCurState((int)AttackItem.StateEnum.SE_FALL_ON_TARGET);
         }
         else
         {
-            m_refObj.setCurState((int)AttackItem.StateEnum.SE_FALL_NORMAL);
+            if (m_refObj.getType() == BeltItem.EffectTypeEnum.ETE_HEAVY)
+            {
+                m_refObj.setCurState((int)AttackItem.StateEnum.SE_FALL_HEAVY);
+            }
+            else
+            { 
+                m_refObj.setCurState((int)AttackItem.StateEnum.SE_FALL_NORMAL);
+            }
         }
         
         resetState();

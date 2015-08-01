@@ -2,6 +2,18 @@
 using System.Collections;
 using System.Collections.Generic;
 
+public struct attachPoint
+{
+    public Transform m_pointTransform;
+    public bool m_inUse;
+    
+    public attachPoint(Transform pointTransform)
+    {
+        m_pointTransform = pointTransform;
+        m_inUse = false;
+    }
+}
+
 public class EnemyTarget : MonoBehaviour 
 {
     private const int MAX_HEALTH    = 100;
@@ -13,11 +25,12 @@ public class EnemyTarget : MonoBehaviour
 
     private int                 m_health;
     private GameObject          m_targetView;
-    public int                  m_numAttachedEnemies;
+    public int                 m_numAttachedEnemies;
     StateBase<EnemyTarget>[]    m_states;
     private int                 m_curState;
     private List<Enemy>         m_enemiesAttached;
     private wobble              m_wobbleAction;
+    private attachPoint[]       m_attachPoints;
 	
 
     private void sceneEvent(SceneManager.SceneEvent sceneEvent, int valueOne)
@@ -45,10 +58,21 @@ public class EnemyTarget : MonoBehaviour
 
         initStates();
 
+        getAttackPoints();
+
         SceneManager.instance.registerForSceneEvent(new SceneManager.sceneEventHandler(sceneEvent));
 	}
 
-
+    private void getAttackPoints()
+    {
+        m_attachPoints = new attachPoint[MAX_ATTACH];
+        Transform pointTransform = null;
+        for (int i = 0; i < MAX_ATTACH; i++)
+        {
+            pointTransform      = this.GetComponent<Transform>().Find("attachPoint"+i);
+            m_attachPoints[i]   = new attachPoint(pointTransform);
+        }
+    }
 
     public void addToHealth(int value)
     {
@@ -88,17 +112,30 @@ public class EnemyTarget : MonoBehaviour
         m_curState = (int)newState;
     }
     
-    public Vector2 attachEnemy(Enemy enemy)
+    public Transform attachEnemy(Enemy enemy)
     {
+        Debug.Log("m_numAttachedEnemies " + m_numAttachedEnemies);
         if (m_numAttachedEnemies >= MAX_ATTACH)
         {
-            return Vector2.zero;
+            return null;
         }
+        
         m_numAttachedEnemies++;
         m_enemiesAttached.Add(enemy);
-        Vector2 randomPoint = Random.insideUnitCircle;
-        randomPoint         *= (m_targetView.GetComponent<SpriteRenderer>().bounds.size.x/2);
-        return (Vector2)GetComponent<Transform>().position + randomPoint;
+        
+        Transform returnValue = null;
+        
+        for(int i=0; i< MAX_ATTACH; i++)
+        {
+            if (!m_attachPoints[i].m_inUse)
+            {
+                returnValue = m_attachPoints[i].m_pointTransform;
+                m_attachPoints[i].m_inUse = true;
+                break;
+            }
+        }
+        Debug.Log("returnValue " + returnValue);
+        return returnValue;
     }
 
     public void removeEnemy()
@@ -135,12 +172,18 @@ public class EnemyTarget : MonoBehaviour
         return m_targetView.GetComponent<Transform>();
     }
 
-    public void killAttached()
+    public void killAttached(BeltItem.EffectTypeEnum effectType)
     {
-        foreach (Enemy curEnemy in m_enemiesAttached)
+        for (int enemyIndex = 0; enemyIndex < m_enemiesAttached.Count; enemyIndex++)
         {
-            curEnemy.kill();
+            m_enemiesAttached[enemyIndex].kill(effectType, false);
         }
+        
+        for (int pointIndex = 0; pointIndex < MAX_ATTACH; pointIndex++)
+        {
+            m_attachPoints[pointIndex].m_inUse = false;
+        }
+        
         m_enemiesAttached.Clear();
 
         m_numAttachedEnemies = 0;

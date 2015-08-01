@@ -10,6 +10,9 @@ public class Enemy : MonoBehaviour
     private pathNode            m_node;
     private EnemyView           m_enemyView;
     private bool                m_ready;
+    private FXBase              m_effect;
+
+    private BeltItem.EffectTypeEnum m_effectType;
     
     public void reset()
     {
@@ -21,7 +24,8 @@ public class Enemy : MonoBehaviour
     public void setNodeAndView(pathNode node, EnemyView enemyView)
     {
         m_node          = node;
-        m_node.m_inUse  = true;
+        //m_node.m_inUse  = true;
+        node.m_refEnemy = this;
         m_enemyView     = enemyView;
     }
 
@@ -79,14 +83,17 @@ public class Enemy : MonoBehaviour
     
     public void moveToNextNode()
     {
-        m_node.m_inUse  = false;
-        m_node          = m_node.m_nextNode;
-        m_node.m_inUse  = true;
+        //m_node.m_inUse      = false;
+        m_node.m_refEnemy   = null;
+        m_node              = m_node.m_nextNode;
+        //m_node.m_inUse      = true;
+        m_node.m_refEnemy   = this;
     }
 
     public bool nextNodeAvailable()
     {
-        return !m_node.m_nextNode.m_inUse;
+        return m_node.m_nextNode.m_refEnemy == null;
+       // return !m_node.m_nextNode.m_inUse;
     }
 
 	void Update () 
@@ -95,7 +102,7 @@ public class Enemy : MonoBehaviour
         {
         	if(GetComponent<Transform>().position.y < ViewManager.instance.getBottomScreenY() - 5)
         	{
-        		kill();
+        		kill(BeltItem.EffectTypeEnum.ETE_NORMAL);
         	}
             m_states[m_curState].updateState();
         }
@@ -110,8 +117,9 @@ public class Enemy : MonoBehaviour
     {
         if (m_node != null)
         {
-            m_node.m_inUse  = false;
-            m_node          = null;
+            //m_node.m_inUse      = false;
+            m_node.m_refEnemy   = null;
+            m_node              = null;
         }
     }
 
@@ -128,14 +136,83 @@ public class Enemy : MonoBehaviour
         m_enemyView.gameObject.GetComponent<Transform>().SetParent(null);
         InstanceFactory.instance.freeEnemyView(m_enemyView);
         m_enemyView = null;
+        if (m_effect != null)
+        {
+            m_effect.endEffect();
+            m_effect = null;
+        }
+        m_effectType = BeltItem.EffectTypeEnum.ETE_NORMAL;
         
         InstanceFactory.instance.freeEnemy(this);
         SceneManager.instance.getEnemyManager().enemyKilled();
     }
 
-    public void kill()
+    public bool doesEffectRotate()
     {
+        return (m_effect != null && (m_effectType == BeltItem.EffectTypeEnum.ETE_ICE));
+    }
+
+
+    public void kill(BeltItem.EffectTypeEnum effectType, bool propagate = false)
+    {
+        m_effect = null;
+        m_effectType = effectType;
+        switch(effectType)
+        {
+            case BeltItem.EffectTypeEnum.ETE_FIRE:
+                m_effect = EffectsManager.instance.getEffect(Vector2.zero, Quaternion.identity, EffectsManager.FXType.FXT_Fire01);
+                break;
+            case BeltItem.EffectTypeEnum.ETE_ICE:
+                m_effect = EffectsManager.instance.getEffect(Vector2.zero, Quaternion.identity, EffectsManager.FXType.FXT_Ice01);
+                break;
+            case BeltItem.EffectTypeEnum.ETE_SHOCK:
+                m_effect = EffectsManager.instance.getEffect(Vector2.zero, Quaternion.identity, EffectsManager.FXType.FXT_Shock01);
+                break;
+
+        }
+        
+
+        if (m_effect != null)
+        {
+            m_effect.GetComponent<SpriteRenderer>().sortingLayerID = m_enemyView.GetComponent<SpriteRenderer>().sortingLayerID;
+            m_effect.GetComponent<SpriteRenderer>().sortingOrder = m_enemyView.GetComponent<SpriteRenderer>().sortingOrder + 1;
+
+            m_effect.GetComponent<Transform>().SetParent(this.GetComponent<Transform>(), false);
+
+            m_effect.triggerEffect();
+        }
+        if (propagate &&
+            m_effectType != BeltItem.EffectTypeEnum.ETE_NORMAL &&
+            m_effectType != BeltItem.EffectTypeEnum.ETE_HEAVY &&
+            m_effectType == m_enemyView.m_type)
+        {
+            propagateDir(0, -1);
+            propagateDir(0, 1);
+            propagateDir(-1, 0);
+            propagateDir(1, 0);
+        }
+        
         m_states[m_curState].resetState();
         m_curState = (int)StateEnum.SE_DEAD;
+        
+    }
+
+    public bool isType(BeltItem.EffectTypeEnum effectType)
+    {
+        return effectType == m_enemyView.m_type;
+    }
+
+    public void propagateDir(int colValue, int rowValue)
+    {
+        int curCol = m_node.m_col + colValue;
+        int curRow = m_node.m_row + rowValue;
+        pathNode tempNode = SceneManager.instance.getEnemyManager().getNode(curCol, curRow);
+        while (tempNode != null && tempNode.m_refEnemy != null && tempNode.m_refEnemy.isType(m_enemyView.m_type))
+        {
+            tempNode.m_refEnemy.kill(m_effectType);
+            curCol += colValue;
+            curRow += rowValue;
+            tempNode = SceneManager.instance.getEnemyManager().getNode(curCol, curRow);
+        }
     }
 }

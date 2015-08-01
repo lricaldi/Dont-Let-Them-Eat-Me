@@ -13,6 +13,8 @@ public class SoundManager : MonoBehaviour {
     [HideInInspector]
     public AudioClip    m_music02;
     [HideInInspector]
+    public AudioClip    m_musicTitle;
+    [HideInInspector]
     public  AudioClip   m_typeSound;
     [HideInInspector]
     public AudioClip    m_correctWord;
@@ -50,6 +52,8 @@ public class SoundManager : MonoBehaviour {
         m_typeSound     = Resources.Load<AudioClip>("Audio/Effects/TypeSound");
         m_music         = Resources.Load<AudioClip>("Audio/Music/Music01");
         m_music02       = Resources.Load<AudioClip>("Audio/Music/Music02");
+        m_musicTitle    = Resources.Load<AudioClip>("Audio/Music/TitleScreenMusicPlaceHolder");
+        
 
         m_correctWord   = Resources.Load<AudioClip>("Audio/Effects/correctWord");
         m_enemyJump     = Resources.Load<AudioClip>("Audio/Effects/enemyJump");

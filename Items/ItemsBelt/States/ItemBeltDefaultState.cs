@@ -4,12 +4,17 @@ using System.Collections;
 public class ItemBeltDefaultState : StateBase<ItemsBelt>
 {
     private const float MOVEMENT_SPEED = 4;
+    private const float TOUCH_ITEM_HINT_TIME = 5;
+
 
     private enum ItemDirectionMove { IDM_LEFT, IDM_RIGHT, IDM_NONE }
     
     private ItemDirectionMove   m_beltMovingDirection;
     private GroupActions        m_moveGroup;
     private movAtoB[]           m_moveActions;
+    private bool                m_wordMatch;
+    private float               m_timer;
+    
     
 
     public ItemBeltDefaultState(ItemsBelt refItemsBelt)
@@ -25,6 +30,8 @@ public class ItemBeltDefaultState : StateBase<ItemsBelt>
 
         m_moveGroup             = new GroupActions(m_moveActions);
         m_beltMovingDirection   = ItemDirectionMove.IDM_NONE;
+        m_wordMatch = false;
+        m_timer = 0;
     }
 
     public  override void initState()
@@ -35,6 +42,16 @@ public class ItemBeltDefaultState : StateBase<ItemsBelt>
     public  override void runState()
 	{
         
+        if (m_wordMatch )
+        {
+            m_timer += Time.deltaTime;
+            if (m_timer > TOUCH_ITEM_HINT_TIME)
+            {
+                Debug.Log("trigger touch");
+                SceneManager.instance.getUIScript().showShotTouch();
+                m_timer = 0;
+            }
+        }
         if (!isFocusItemInCenterPos() && m_beltMovingDirection == ItemDirectionMove.IDM_NONE)
         {
 
@@ -51,15 +68,7 @@ public class ItemBeltDefaultState : StateBase<ItemsBelt>
             }
 
         }
-        else if (m_refObj.InputWord == m_refObj.Items[m_refObj.FocusItem].ItemName || m_refObj.debugFireItem)
-        {
-            SoundManager.instance.PlaySound(SoundManager.instance.m_correctWord, false, 1);
-
-            SceneManager.instance.lockInput(true);
-
-            m_refObj.debugFireItem  = false;
-            curStep                 = StateStep.SSEnd;
-        }
+       
     }
 
     // End State
@@ -125,14 +134,43 @@ public class ItemBeltDefaultState : StateBase<ItemsBelt>
     
     public void wordUpdated(string newWord)
     {
-        if (m_refObj.Items[m_refObj.FocusItem].ItemName.StartsWith(newWord)) return;
-        for (int i = 0; i < ItemsBelt.NUM_OF_ITEMS; i++)
+        bool containsSubString = true;
+        if (!m_refObj.Items[m_refObj.FocusItem].ItemName.StartsWith(newWord))
         {
-            if (m_refObj.Items[i].ItemName.StartsWith(newWord))
+            containsSubString = false;
+            for (int i = 0; i < ItemsBelt.NUM_OF_ITEMS; i++)
             {
-                m_refObj.FocusItem = i;
-                break;
+                if (m_refObj.Items[i].ItemName.StartsWith(newWord))
+                {
+                    containsSubString = true;
+                    m_refObj.FocusItem = i;
+                    break;
+                }
             }
+         }
+
+        SceneManager.instance.getUIScript().updateInputWordColor((containsSubString)?Color.green:Color.red);
+        m_wordMatch = m_refObj.InputWord == m_refObj.Items[m_refObj.FocusItem].ItemName;
+        m_timer = 0;
+        m_refObj.ItemReady.SetActive(m_wordMatch);
+            
+        
+    }
+
+    public void trySubmitWord(string newWord)
+    {
+        if (m_refObj.InputWord == m_refObj.Items[m_refObj.FocusItem].ItemName || m_refObj.debugFireItem)
+        {
+            SoundManager.instance.PlaySound(SoundManager.instance.m_correctWord, false, 1);
+
+            SceneManager.instance.lockInput(true);
+
+            m_refObj.debugFireItem = false;
+            curStep = StateStep.SSEnd;
+        }
+        else
+        {
+            SoundManager.instance.PlaySound(SoundManager.instance.m_wrongInput, false, 1);
         }
     }
 }

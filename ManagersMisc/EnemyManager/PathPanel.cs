@@ -4,16 +4,24 @@ using System.Collections;
 public class pathNode
 {
     public Transform    m_nodeTransform;
-    public bool         m_inUse;
+    //public bool         m_inUse;
     public pathNode     m_nextNode;
     public bool         m_fastMove;
 
-    public pathNode(Transform node, pathNode nextNode, bool fastMove)
+    public int          m_col;
+    public int          m_row;
+
+    public Enemy        m_refEnemy = null;
+
+    public pathNode(Transform node, pathNode nextNode, bool fastMove, int col, int row)
     {
         m_fastMove      = fastMove;
         m_nextNode      = nextNode;
         m_nodeTransform = node;
-        m_inUse         = false;
+        //m_inUse         = false;
+        m_col           = col;
+        m_row           = row;
+        m_refEnemy      = null;
 
     }
 }
@@ -54,11 +62,19 @@ public class PathPanel : MonoBehaviour
             {
                 Transform nodeTrans = GetComponent<Transform>().Find("pathCol" + colIndex + "Row" + rowIndex);
                 pathNode nextNode   = (rowIndex !=0)?nodes[rowIndex-1]: null;
-                nodes[rowIndex]     = new pathNode(nodeTrans, nextNode, rowIndex >= FAST_MOVE_ROW);
+                nodes[rowIndex]     = new pathNode(nodeTrans, nextNode, rowIndex >= FAST_MOVE_ROW, colIndex, rowIndex);
             }
 
             m_columns[colIndex] = new pathColumn(nodes);
         }
+    }
+
+    public pathNode getNode(int col, int row)
+    {
+        if (col < 0 || col >= NUM_COLS) return null;
+        if (row < 0 || row >= NUM_ROWS) return null;
+
+        return m_columns[col].m_nodes[row];
     }
 
     public pathNode getFreeStartNode()
@@ -68,7 +84,8 @@ public class PathPanel : MonoBehaviour
 
         for (int i = 0; i < NUM_COLS; i++)
         {
-            if (!m_columns[i].m_nodes[firstRow].m_inUse)
+            //if (!m_columns[i].m_nodes[firstRow].m_inUse)
+            if (m_columns[i].m_nodes[firstRow].m_refEnemy == null)
             {
                 m_freeNodes[curFree++] = i;
             }
@@ -76,6 +93,7 @@ public class PathPanel : MonoBehaviour
 
         if (curFree < 1)
         {
+            
             return null;
         }
 

@@ -3,7 +3,7 @@ using System.Collections;
 
 public class BeltItem : MonoBehaviour 
 {
-    public  enum EffectTypeEnum {ETE_NORMAL, ETE_FIRE, ETE_WATER, ETE_HEAVY, ETE_ELECTRIC, ETE_Length}
+    public  enum EffectTypeEnum {ETE_NORMAL, ETE_FIRE, ETE_ICE, ETE_HEAVY, ETE_SHOCK, ETE_Length}
 
     private int             m_position;
     private string          m_itemName;
@@ -64,6 +64,10 @@ public class BeltItem : MonoBehaviour
 
         m_itemName      = m_itemView.m_itemName;
         m_effectType    = m_itemView.m_effectType;
+    }
+    public void OnMouseDown()
+    {
+        Debug.Log("Belt Item touched");
     }
 
 }

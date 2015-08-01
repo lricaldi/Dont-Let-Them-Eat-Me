@@ -31,7 +31,7 @@ public class GameManager : MonoBehaviour
 		m_gameStates[(int)GameManagerState.GMS_AdShow]	    = new LevelOutroScene();
 
         QualitySettings.vSyncCount = 0;
-        Application.targetFrameRate = 30;
+        Application.targetFrameRate = 60;
         setNextState();
 	}
 

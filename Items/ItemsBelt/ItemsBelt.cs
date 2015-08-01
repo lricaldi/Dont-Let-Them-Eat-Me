@@ -14,9 +14,20 @@ public class ItemsBelt : ObjectWithStates<ItemsBelt> {
     private int[]       m_layerOrderAtPos;
     private int         m_focusItem;
     private string      m_inputWord;
+    public  GameObject  m_itemReady;
 
     public bool         debugFireItem;
     
+    
+
+    public GameObject ItemReady
+    {
+        get
+        {
+            return this.m_itemReady;
+        }
+    }
+
     public BeltItem[] Items
     {
         get
@@ -99,13 +110,35 @@ public class ItemsBelt : ObjectWithStates<ItemsBelt> {
     private void registerToKeyboard()
     {
          GameKeyboard keyboard  = GameObject.Find("GameKeyboard").GetComponent<GameKeyboard>();
-         keyboard.wordUpdate    += new GameKeyboard.wordUpdatedEventHandler(wordUpdated);
+
+        keyboard.registerForKeyboardEvent(new GameKeyboard.keyboardEventHandler(keyboardUpdate));
     }
 
-    private void wordUpdated(string newWord)
+    private void keyboardUpdate(GameKeyboard.KeyboardEvent kbEvent,  string valueOne)
     {
-        m_inputWord = newWord;
-        ((ItemBeltDefaultState)m_states[(int)StateEnum.SE_DEFAULT]).wordUpdated(newWord);
+       
+        switch (kbEvent)
+        {
+            case GameKeyboard.KeyboardEvent.KE_WORDUPDATE:
+                m_inputWord = valueOne;
+                ((ItemBeltDefaultState)m_states[(int)StateEnum.SE_DEFAULT]).wordUpdated(valueOne);
+            break;
+            case GameKeyboard.KeyboardEvent.KE_SUBMITWORD:
+                ((ItemBeltDefaultState)m_states[(int)StateEnum.SE_DEFAULT]).trySubmitWord(m_inputWord);
+            break;
+        }
+    }
+
+    public string getBeltItemName(int itemPos)
+    {
+        for(int i =0; i< m_items.Length; i++)
+        {
+            if(m_items[i].Position == itemPos)
+            {
+                return m_items[i].ItemView.m_itemName;
+            }
+        }
+        return "";
     }
 
     private void setupItems()

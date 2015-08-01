@@ -11,6 +11,7 @@ public class movFall : StateActionBase
     private Vector2     m_startVel;
     private Vector2     m_curVel;
     private Transform   m_obj;
+    private Transform   m_objRot;
 
     private Vector3     m_rotation;
 
@@ -23,14 +24,14 @@ public class movFall : StateActionBase
        // User needs to initialize it with the full contructor or setup before this action can be used.
     }
 
-    public movFall(Transform obj, Vector2 startVel, float fallSpeed, float bottomY, float rotationSpeed)
+    public movFall(Transform obj, Vector2 startVel, float fallSpeed, float bottomY, float rotationSpeed, Transform objRot = null)
 	{
-        setup(obj, startVel, fallSpeed, bottomY, rotationSpeed);
+        setup(obj, startVel, fallSpeed, bottomY, rotationSpeed, objRot);
         
 	}
 
 
-	public void setup(Transform obj, Vector2 startVel, float fallSpeed, float bottomY, float rotationSpeed)
+    public void setup(Transform obj, Vector2 startVel, float fallSpeed, float bottomY, float rotationSpeed, Transform objRot = null)
 	{
 		
 		m_obj               = obj;
@@ -41,7 +42,15 @@ public class movFall : StateActionBase
         m_startVel          = startVel;
         m_curVel            = m_startVel;
         m_rotation          = Vector3.zero;
-		
+        if (objRot == null)
+        {
+            m_objRot = m_obj;
+        }
+        else
+        {
+            m_objRot = objRot;
+        }
+
         reset();
 		
 	}
@@ -52,7 +61,7 @@ public class movFall : StateActionBase
         m_curRotation   += (Time.deltaTime * m_rotateSpeed);
         m_rotation.z    = m_curRotation;
 
-        m_obj.rotation = Quaternion.Euler(m_rotation);
+        m_objRot.rotation = Quaternion.Euler(m_rotation);
 
         
         Vector2 curPos = m_obj.position;

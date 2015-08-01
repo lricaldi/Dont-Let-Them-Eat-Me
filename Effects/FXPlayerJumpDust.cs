@@ -15,7 +15,7 @@ public class FXPlayerJumpDust : FXBase {
 	
 	public override void triggerEffect()
 	{
-		Vector2 curPos = GetComponent<Transform>().position;
+		/*Vector2 curPos = GetComponent<Transform>().position;
 		m_rightDust 	= EffectsManager.instance.getEffect(curPos, Quaternion.identity, EffectsManager.FXType.FXT_Dust01);	
 		m_leftDust 		= EffectsManager.instance.getEffect(curPos, Quaternion.identity, EffectsManager.FXType.FXT_Dust01);	
 		
@@ -24,7 +24,7 @@ public class FXPlayerJumpDust : FXBase {
 		
 		m_effectTriggered 	= true;
 		m_distance 			= 0;
-		
+		*/
 	}
 	
 	void Update()

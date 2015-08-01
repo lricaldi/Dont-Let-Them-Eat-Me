@@ -9,6 +9,8 @@ public class InstanceFactory : MonoBehaviour
     public EnemyView[]  m_enemyViews;
     public Enemy        m_enemy;
     public ItemView[]   m_itemViews;
+    public AttackItem   m_attackItem;
+    public TargetCrumb  m_targetCrumb;
  
     void Awake()
     {
@@ -20,17 +22,31 @@ public class InstanceFactory : MonoBehaviour
 
     private EnemyView getRandomEnemy()
     {
+        //return m_enemyViews[3];
         return m_enemyViews[Random.Range(0, m_enemyViews.Length)];
     }
 
     private ItemView getRandomItem()
     {
+        //return m_itemViews[0];
         return m_itemViews[Random.Range(0, m_itemViews.Length)];
     }
 
     public Enemy getEnemy(Vector2 position, Quaternion rotQuat)
     {
         Enemy returnVal = ObjectPoolManager.CreatePooled(m_enemy.gameObject, position, rotQuat).GetComponent<Enemy>();
+        return returnVal;
+    }
+
+    public AttackItem getAttackItem(Vector2 position, Quaternion rotQuat)
+    {
+        AttackItem returnVal = ObjectPoolManager.CreatePooled(m_attackItem.gameObject, position, rotQuat).GetComponent<AttackItem>();
+        return returnVal;
+    }
+
+    public TargetCrumb getTargetCrumb(Vector2 position, Quaternion rotQuat)
+    {
+        TargetCrumb returnVal = ObjectPoolManager.CreatePooled(m_targetCrumb.gameObject, position, rotQuat).GetComponent<TargetCrumb>();
         return returnVal;
     }
 
@@ -72,5 +88,15 @@ public class InstanceFactory : MonoBehaviour
     public void freeItemView(ItemView itemView)
     {
         ObjectPoolManager.Destroy(itemView.gameObject);
+    }
+
+    public void freeAttackItem(AttackItem attackItem)
+    {
+        ObjectPoolManager.Destroy(attackItem.gameObject);
+    }
+
+    public void freeTargetCrumb(TargetCrumb targetCrumb)
+    {
+        ObjectPoolManager.Destroy(targetCrumb.gameObject);
     }
 }

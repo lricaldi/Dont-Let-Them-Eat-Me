@@ -21,8 +21,11 @@ public class EnemyManager : MonoBehaviour
             Debug.Log(" IN PATH " + curEnemy.Value.gameObject.GetInstanceID() + " POS " + curEnemy.Value.GetComponent<Transform>().position);
         }
     }
-	
 
+    public pathNode getNode(int col, int row)
+    {
+        return m_pathPanel.getNode(col, row);
+    }
 	void Start () 
     {
         m_pathPanel     = GameObject.Find("PathPanel").gameObject.GetComponent<PathPanel>();
@@ -60,6 +63,7 @@ public class EnemyManager : MonoBehaviour
                 newEnemyView.gameObject.GetComponent<Transform>().SetParent(newEnemy.GetComponent<Transform>(), false);
                 newEnemy.reset();
                 newEnemy.setNodeAndView(node, newEnemyView);
+               
                 newEnemy.setupStates();
                 newEnemy.setReady(true);
                 

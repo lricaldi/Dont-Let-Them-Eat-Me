@@ -66,17 +66,21 @@ public class EnemyEatingState : StateBaseWithActions<Enemy>
             }
             if (foundTargetCollision)
             {
-                Vector2 attachPos = SceneManager.instance.getEnemyTarget().attachEnemy(m_refObj);
-                if (attachPos != Vector2.zero)
+                m_tryToAttach = false;
+                Transform attachTrans = SceneManager.instance.getEnemyTarget().attachEnemy(m_refObj);
+                if (attachTrans != null)
                 {
 
-                    m_refObj.GetComponent<Transform>().position     = attachPos;
-                    m_refObj.GetComponent<Transform>().rotation     = Quaternion.Euler(0, 0, Random.Range(0, 360));
-                    m_refObj.GetComponent<Transform>().localScale   = new Vector3(0.9f, 0.9f, 1);
+                    m_refObj.GetComponent<Transform>().position = attachTrans.position;
+                    m_refObj.GetComponent<Transform>().rotation = attachTrans.rotation;
+                    m_refObj.GetComponent<Transform>().localScale = new Vector3(0.9f, 0.9f, 1);
 
                     m_actions[m_curAction].forceEndAction();
                 }
-                m_tryToAttach = false;
+                else
+                {
+                    m_refObj.kill(BeltItem.EffectTypeEnum.ETE_NORMAL);
+                }
             }
             
         }

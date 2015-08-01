@@ -1,13 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class EnemyFallNormalItemState  : StateBaseWithActions<AttackItem>
+public class EnemyFallHeavyItemState : StateBaseWithActions<AttackItem>
 {
     private enum ActionEnum { AE_GODOWN, AE_HIT, AE_BOUNCEFALL, AE_Length }
 
-    private bool m_targetAny;
+    //private bool m_targetAny;
 
-    public EnemyFallNormalItemState(AttackItem refItem):base(refItem)
+    public EnemyFallHeavyItemState(AttackItem refItem)
+        : base(refItem)
     {
         m_actions                                   = new StateActionBase[(int)ActionEnum.AE_Length];
         m_actions[(int)ActionEnum.AE_GODOWN]        = new movAtoB();
@@ -17,13 +18,12 @@ public class EnemyFallNormalItemState  : StateBaseWithActions<AttackItem>
 
     public override void initState()
     {
-        
+        Debug.Log("fall Heavy init");
         // Find an enemy to hit we need the object
         m_refObj.EnemyToKill = SceneManager.instance.getEnemyManager().getNextEnemyToKill();
         Vector2 endPos;
         Vector2 startPos;
-        m_targetAny = false;
-        
+                
 
         m_refObj.enableCollider2D(true);
 
@@ -60,22 +60,17 @@ public class EnemyFallNormalItemState  : StateBaseWithActions<AttackItem>
     {
        if(m_curAction == (int)ActionEnum.AE_GODOWN)
        {
-            // if attack item collides with enemy (since its vertical move this will hit the enemy even when moving up vertically).
-            if (!m_refObj.EnemyToKill.isOnPath())
-            {
-                m_targetAny = true;
-            }
 
+           if(m_refObj.GetComponent<Transform>().position.y < ViewManager.instance.getBottomScreenY())
+           {
+               m_actions[m_curAction].forceDone();
+           }
+           
             Enemy collidedEnemy = m_refObj.CollidedEnemy;
             if (collidedEnemy != null)
             {
-                if(m_targetAny || collidedEnemy.GetInstanceID() == m_refObj.EnemyToKill.GetInstanceID())
-                {
-                    //m_refObj.EnemyToKill.kill();
-                    collidedEnemy.kill(m_refObj.getType(), true);
-                    m_refObj.EnemyToKill = null;
-                    m_actions[m_curAction].forceDone();
-                }
+                SoundManager.instance.PlaySound(SoundManager.instance.m_hitEnemy, false, 1);
+                collidedEnemy.kill(m_refObj.getType(), true);
             }
             // if enemy has moved in the x axis and is not in line for the attack (when enemy jumps on target) then we use the next enemy in line to attack.
        }
@@ -85,8 +80,6 @@ public class EnemyFallNormalItemState  : StateBaseWithActions<AttackItem>
     {
         if( m_curAction == (int)ActionEnum.AE_GODOWN )
         {
-            SoundManager.instance.PlaySound(SoundManager.instance.m_hitEnemy, false, 1);
-            
             m_refObj.enableCollider2D(false);
             if (m_refObj.EnemyToKill == null)
             {

@@ -26,6 +26,10 @@ public class movOscilate : StateActionBase
         m_started = false;
 	}
 
+    public movOscilate()
+    {
+    }
+
     public movOscilate(GameObject obj, float horzOcill, float vertOcill, float horzSpeed, float vertSpeed)
 	{
         setup(obj, horzOcill, vertOcill, horzSpeed, vertSpeed);
@@ -56,7 +60,7 @@ public class movOscilate : StateActionBase
 	public override void update()
 	{
 
-        //Debug.Log("OSC");
+       
         if (m_done) return;
         if (!m_started)
         {
@@ -68,23 +72,38 @@ public class movOscilate : StateActionBase
 
         if( m_horzOcillation != 0)
         {
-           // Debug.Log("HORZOSC");
+          
             m_horzTime += m_horzSpeed * Time.deltaTime;
-            if (m_horzTime > 1 || m_horzTime < 0)
+            if (m_horzTime > 1)
             {
-				m_horzSpeed = -m_horzSpeed*Time.deltaTime;
+                m_horzTime = 1;
+                m_horzSpeed = -m_horzSpeed;
             }
+            else if (m_horzTime < 0)
+            {
+                m_horzTime = 0;
+                m_horzSpeed = -m_horzSpeed;
+            }
+            
             newPos.x = Mathf.Lerp(startPos.x - m_horzOcillation, startPos.x + m_horzOcillation, m_horzTime);
         }
 
         if(m_vertOcillation != 0)
         {
-            //Debug.Log("HORZOSC");
+            
 			m_vertTime += m_vertSpeed * Time.deltaTime;
-            if (m_vertTime > 1 || m_vertTime < 0)
+
+            if (m_vertTime > 1)
             {
-				m_vertSpeed = -m_vertSpeed * Time.deltaTime;
+                m_vertTime = 1;
+                m_vertSpeed = -m_vertSpeed;
             }
+            else if (m_vertTime < 0)
+            {
+                m_vertTime = 0;
+                m_vertSpeed = -m_vertSpeed;
+            }
+
             newPos.y = Mathf.Lerp(startPos.y - m_vertOcillation, startPos.y + m_vertOcillation, m_vertTime);
         }
         m_obj.GetComponent<Transform>().position = newPos;

@@ -3,57 +3,72 @@ using System.Collections;
 
 public class EnemyIdleState : StateBaseWithActions<Enemy>
 {
-    private const float NORMAL_MOVE_WAIT = 6;
-    private const float RANDOM_MOVE_RANGE = 3;
+    private const float NORMAL_MOVE_WAIT = 15;
+    private const float RANDOM_MOVE_RANGE = 5;
     private const float FAST_MOVE_WAIT = 0.05f;
 
     private enum ActionEnum { AE_ANIMATE, AE_WAIT, AE_Length }
 
-    private bool waitingToMove;
-    private float m_waitTime;
+    private bool             m_targetWaiting;
+    private Enemy.StateEnum  m_nextState;
 
     public EnemyIdleState(Enemy refEnemy):base(refEnemy)
     {
-
-        m_waitTime  = FAST_MOVE_WAIT;
-        
         m_actions                               = new StateActionBase[(int)ActionEnum.AE_Length];
         m_actions[(int)ActionEnum.AE_ANIMATE]   = new runAni(null, SceneManager.instance.hashIDs.idle, m_refObj.getViewAnimator()); // never ends.
-        m_actions[(int)ActionEnum.AE_WAIT]      = new waitTime(m_waitTime);
-
-        
+        m_actions[(int)ActionEnum.AE_WAIT]      = new waitTime(NORMAL_MOVE_WAIT);
     }
 
     public override void initState()
     {
-        m_waitTime = (m_refObj.isFastMoveNode() || waitingToMove)? FAST_MOVE_WAIT : NORMAL_MOVE_WAIT;
-        
-        ((waitTime)m_actions[(int)ActionEnum.AE_WAIT]).setup(m_waitTime);
 
-        waitingToMove   = false;
+        ((waitTime)m_actions[(int)ActionEnum.AE_WAIT]).setup(m_refObj.isFastMoveNode() ? FAST_MOVE_WAIT : NORMAL_MOVE_WAIT);
+        m_targetWaiting = false;
         m_curAction     = (int)ActionEnum.AE_ANIMATE;
         
         curStep         = StateStep.SSRuning;
     }
- 
-    public override void endState()
+
+    
+    protected override void actionDone()
     {
-        if (m_refObj.isCurNodeEndNode())
+        if (m_curAction == (int)ActionEnum.AE_WAIT)
         {
+            m_curAction--;
+            ((waitTime)m_actions[(int)ActionEnum.AE_WAIT]).setup(FAST_MOVE_WAIT);
             
-            if (SceneManager.instance.getEnemyTarget().canAttachEnemy())
+            if (m_refObj.isCurNodeEndNode())
             {
-                m_refObj.setCurrentState(Enemy.StateEnum.SE_EAT);
+                if (!m_targetWaiting)
+                {
+                    m_targetWaiting = true;
+                    ((waitTime)m_actions[(int)ActionEnum.AE_WAIT]).setup(Random.Range(0, RANDOM_MOVE_RANGE));
+                }
+                else 
+                {
+                    if (SceneManager.instance.getEnemyTarget().canAttachEnemy())
+                    {
+                        m_nextState = Enemy.StateEnum.SE_EAT;
+                        curStep = StateStep.SSEnd;
+                    }
+                    else
+                    {
+                        ((waitTime)m_actions[(int)ActionEnum.AE_WAIT]).setup(Random.Range(0, RANDOM_MOVE_RANGE));
+                    }
+                }
+               
+            }
+            else if (m_refObj.nextNodeAvailable())
+            {
+                m_nextState = Enemy.StateEnum.SE_MOVEUP;
+                curStep = StateStep.SSEnd;
             }
         }
-        else if (m_refObj.nextNodeAvailable())
-        {
-            m_refObj.setCurrentState(Enemy.StateEnum.SE_MOVEUP);
-        }
-        else
-        {
-            waitingToMove = true;
-        }
+    }
+
+    public override void endState()
+    {
+        m_refObj.setCurrentState(m_nextState);
         resetState();
     }
 }

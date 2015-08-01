@@ -4,7 +4,7 @@ using System.Collections;
 public class AttackItem : ObjectWithStates<AttackItem>
 {
 
-    public enum StateEnum { SE_SHINE, SE_LAUNCH, SE_FALL_ON_TARGET, SE_FALL_NORMAL, SE_Length}
+    public enum StateEnum { SE_SHINE, SE_LAUNCH, SE_FALL_ON_TARGET, SE_FALL_NORMAL, SE_FALL_HEAVY, SE_Length }
 
     private ItemView                m_itemView;
     private BeltItem.EffectTypeEnum m_effectType;
@@ -68,15 +68,14 @@ public class AttackItem : ObjectWithStates<AttackItem>
         m_states[(int)StateEnum.SE_LAUNCH]          = new LaunchItemState(this);
         m_states[(int)StateEnum.SE_FALL_NORMAL]     = new EnemyFallNormalItemState(this);
         m_states[(int)StateEnum.SE_FALL_ON_TARGET]  = new TargetFallItemState(this);
-
-        m_itemFired                                 = false;
+        m_states[(int)StateEnum.SE_FALL_HEAVY]      = new EnemyFallHeavyItemState(this);
 
         m_curState                                  = (int) StateEnum.SE_SHINE;
     }
 
     protected override void update()
     {
-        if (m_itemFired)
+        if (m_itemFired && m_states !=null)
         {
             base.update();
         }
@@ -93,6 +92,12 @@ public class AttackItem : ObjectWithStates<AttackItem>
         m_itemFired = true;
     }
 
+    public void setLayer(string layerName, int order)
+    {
+        m_itemView.GetComponent<SpriteRenderer>().sortingLayerName = layerName;
+        m_itemView.GetComponent<SpriteRenderer>().sortingOrder = order;
+    }
+
     public bool itemAvailable()
     {
         return !m_itemFired;
@@ -103,6 +108,7 @@ public class AttackItem : ObjectWithStates<AttackItem>
         m_itemView.GetComponent<Transform>().SetParent(null);
         InstanceFactory.instance.freeItemView(m_itemView);
         m_itemFired = false;
+        InstanceFactory.instance.freeAttackItem(this);
     }
 
     public void enableCollider2D(bool doEnable)
@@ -116,5 +122,10 @@ public class AttackItem : ObjectWithStates<AttackItem>
         {
             m_lastCollidedEnemy = other.GetComponent<Enemy>();
         }
+    }
+
+    public BeltItem.EffectTypeEnum getType()
+    {
+        return m_itemView.m_effectType;
     }
 }

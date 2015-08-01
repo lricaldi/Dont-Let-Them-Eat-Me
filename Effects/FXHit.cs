@@ -10,6 +10,7 @@ public class FXHit : FXBase
 	
 	public void effectFinished()
 	{
+        
 		GetComponent<Animator>().ResetTrigger("startEffect");
 		EffectsManager.instance.freeEffect(this);
 	}

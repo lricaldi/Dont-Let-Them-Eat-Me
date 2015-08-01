@@ -8,4 +8,8 @@ public class FXBase : MonoBehaviour
 	{
 		// TODO by class child
 	}
+    public virtual void endEffect()
+    {
+        // TODO by class child
+    }
 }

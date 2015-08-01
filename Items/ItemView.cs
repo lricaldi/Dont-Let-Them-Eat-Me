@@ -5,4 +5,9 @@ public class ItemView : MonoBehaviour
 {
     public string                   m_itemName;
     public BeltItem.EffectTypeEnum  m_effectType;
+
+    public void OnMouseDown()
+    {
+        Debug.Log("click on view");
+    }
 }

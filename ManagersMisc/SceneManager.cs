@@ -3,6 +3,7 @@ using System.Collections;
 
 public class SceneManager : MonoBehaviour 
 {
+    public enum SceneEvent { SE_TARGETWON, SE_TARGETDIED, SE_TARGETHEALTHCHANGE, SE_ATTACKITEMLAUCHED, SE_ATTACKITEMDONE }
 
     public bool fireEvent; //DEBUG
     public bool fireEvent2; //DEBUG
@@ -10,18 +11,15 @@ public class SceneManager : MonoBehaviour
     public delegate void    sceneEventHandler(SceneEvent sceneEvent, int valueone);
     public event            sceneEventHandler sceneEvent;
 
-
-
-    public enum SceneEvent { SE_TARGETWON, SE_TARGETDIED, SE_TARGETHEALTHCHANGE, SE_ATTACKITEMLAUCHED, SE_ATTACKITEMDONE }
-    
     public static SceneManager instance = null;
 
     public  HashIDs         hashIDs { get; set; }
     private GameKeyboard    m_gameKB;
     private EnemyTarget     m_target;
     private EnemyManager    m_enemyMan;
-    private AttackItem      m_attackItem;
+    //private AttackItem      m_attackItem;
     private ItemsBelt       m_itemsBelt;
+    private UIScript        m_UIScript;
 
     void Awake()
     {
@@ -36,24 +34,41 @@ public class SceneManager : MonoBehaviour
 
     public void DEBUGCheatFire()
     {
-        if (m_itemsBelt == null)
+       /* if (m_itemsBelt == null)
         {
             m_itemsBelt = GameObject.Find("ItemsBelt").GetComponent<ItemsBelt>();
         }
         if (getAttackItem().itemAvailable())
         {
             m_itemsBelt.debugFireItem = true;
-        }
+        }*/
     }
 
-    public AttackItem getAttackItem()
+    public UIScript getUIScript()
+    {
+        if (m_UIScript == null)
+        {
+            m_UIScript = GameObject.Find("Canvas").GetComponent<UIScript>();
+        }
+        return m_UIScript;
+    }
+    public ItemsBelt getItemsBelt()
+    {
+        if (m_itemsBelt == null)
+        {
+            m_itemsBelt = GameObject.Find("ItemsBelt").GetComponent<ItemsBelt>();
+        }
+        return m_itemsBelt;
+    }
+
+   /* public AttackItem getAttackItem()
     {
         if (m_attackItem == null)
         {
             m_attackItem = GameObject.Find("AttackItem").GetComponent<AttackItem>();
         }
         return m_attackItem;
-    }
+    }*/
 
     public void targetDied()
     {
@@ -112,8 +127,9 @@ public class SceneManager : MonoBehaviour
 
         m_target        = GameObject.Find("EnemyTarget").GetComponent<EnemyTarget>();
         m_enemyMan      = GameObject.Find("EnemyManager").GetComponent<EnemyManager>();
-        m_attackItem    = GameObject.Find("AttackItem").GetComponent<AttackItem>();
+        //m_attackItem    = GameObject.Find("AttackItem").GetComponent<AttackItem>();
         m_gameKB        = GameObject.Find("GameKeyboard").GetComponent<GameKeyboard>();
+       
 
         m_gameKB.lockKeyboard(false);
     }
@@ -134,6 +150,11 @@ public class SceneManager : MonoBehaviour
     public void debugEnemiesInPath()
     {
         m_enemyMan.DebugEnemiesInPath();
+    }
+
+    public void showWordClue(int beltItemPos)
+    {
+        getUIScript().showClue(getItemsBelt().getBeltItemName(beltItemPos), true);
     }
 
   

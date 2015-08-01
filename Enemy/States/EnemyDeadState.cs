@@ -14,13 +14,19 @@ public class EnemyDeadState : StateBaseWithActions<Enemy>
 
     public override void initState()
     {
+        Transform rotTransform = m_refObj.doesEffectRotate() ? m_refObj.GetComponent<Transform>() : m_refObj.getView().GetComponent<Transform>();
+        
         Vector2 startSpeed = new Vector2(Random.Range(-0.25f, 0.25f), 1f).normalized * 8;
+        
         ((movFall)m_actions[(int)ActionEnum.AE_FALL]).setup(m_refObj.GetComponent<Transform>(), startSpeed,
                                                                 -20f, ViewManager.instance.getBottomScreenY() - 1,
-                                                                Random.Range(100, 150));
+                                                                Random.Range(100, 150), rotTransform);
         
         m_refObj.freeNode();
         SceneManager.instance.getEnemyManager().removeFromPath(m_refObj);
+
+        EffectsManager.instance.getEffect(m_refObj.GetComponent<Transform>().position, Quaternion.identity, EffectsManager.FXType.FXT_Hit01).triggerEffect();
+        
 
         m_curAction = (int)ActionEnum.AE_ANIMATE;
         curStep     = StateStep.SSRuning;
