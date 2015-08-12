@@ -123,12 +123,20 @@ public class ItemsBelt : ObjectWithStates<ItemsBelt> {
                 m_inputWord = valueOne;
                 ((ItemBeltDefaultState)m_states[(int)StateEnum.SE_DEFAULT]).wordUpdated(valueOne);
             break;
-            case GameKeyboard.KeyboardEvent.KE_SUBMITWORD:
+          /*  case GameKeyboard.KeyboardEvent.KE_SUBMITWORD:
                 ((ItemBeltDefaultState)m_states[(int)StateEnum.SE_DEFAULT]).trySubmitWord(m_inputWord);
-            break;
+            break;*/
         }
     }
 
+
+    public void trySubmitWord()
+    {
+        if (m_curState == (int)StateEnum.SE_DEFAULT)
+        {
+            ((ItemBeltDefaultState)m_states[(int)StateEnum.SE_DEFAULT]).trySubmitWord(m_inputWord);
+        }
+    }
     public string getBeltItemName(int itemPos)
     {
         for(int i =0; i< m_items.Length; i++)
@@ -149,5 +157,10 @@ public class ItemsBelt : ObjectWithStates<ItemsBelt> {
             m_items[i].GetComponent<Transform>().localScale = m_scales[i];
             m_items[i].GetComponent<Transform>().position   = m_positions[i].position;
         }
+    }
+
+    public bool hasWordMatch()
+    {
+        return ((ItemBeltDefaultState)m_states[(int)StateEnum.SE_DEFAULT]).hasWordMatch();
     }
 }

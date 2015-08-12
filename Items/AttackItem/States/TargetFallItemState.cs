@@ -9,7 +9,7 @@ public class TargetFallItemState : StateBaseWithActions<AttackItem>
     {
         m_actions                                   = new StateActionBase[(int)ActionEnum.AE_Length];
         m_actions[(int)ActionEnum.AE_GODOWN]        = new movAtoB();
-        m_actions[(int)ActionEnum.AE_HIT]           = new waitTime(0.1f);
+        m_actions[(int)ActionEnum.AE_HIT]           = new waitTime(0.05f);
         m_actions[(int)ActionEnum.AE_BOUNCEFALL]    = new movFall();
 
        
@@ -31,7 +31,7 @@ public class TargetFallItemState : StateBaseWithActions<AttackItem>
         curStep     = StateStep.SSRuning;
     }
 
-    protected override void actionDone()
+    protected override bool actionDone()
     {
         if (m_curAction == (int)ActionEnum.AE_HIT)
         {
@@ -41,7 +41,7 @@ public class TargetFallItemState : StateBaseWithActions<AttackItem>
         {
             SoundManager.instance.PlaySound(SoundManager.instance.m_hitEnemy, false, 1);
         }
-        base.actionDone();
+        return base.actionDone();
     }
 
     public override void endState()

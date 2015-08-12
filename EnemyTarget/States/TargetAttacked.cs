@@ -27,7 +27,9 @@ public class TargetAttacked : StateBaseWithActions<EnemyTarget>
     {
 
         ((movOscilate)m_actions[(int)ActionEnum.AE_WOBBLE]).setup(m_refObj.getViewTransform().gameObject, 0, 0.1f, 0, 5f);
-        
+
+        SceneManager.instance.getUIScript().getTargetHealth().doHeartBeat(true);
+
         m_timer     = 0;
         m_timerCrumbs = 0;
         m_curAction = (int)ActionEnum.AE_ANIMATE;
@@ -72,6 +74,7 @@ public class TargetAttacked : StateBaseWithActions<EnemyTarget>
 
                 int totalDamage = m_refObj.getNumAttachedEnemies() * ATTACK_VALUE_PER_ENEMY;
                 m_refObj.addToHealth(totalDamage);
+                
                 m_timer         = 0;
             }
         }
@@ -80,6 +83,7 @@ public class TargetAttacked : StateBaseWithActions<EnemyTarget>
 
     public override void endState()
     {
+        SceneManager.instance.getUIScript().getTargetHealth().doHeartBeat(false);
         m_refObj.setCurrentState(m_nextState);
         resetState();
     }

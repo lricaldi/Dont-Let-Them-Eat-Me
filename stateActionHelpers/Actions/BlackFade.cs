@@ -1,51 +1,51 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class BlackFade : StateActionBase{
 
-	private float m_alphaTarget;
-	private bool m_fadeIn;
-	private float m_fadeSpeed;
-	private bool m_started;
+	private Image       m_img;
+    private float       m_speed;
+    private float       m_alphaFrom;
+    private float       m_alphaTo;
 
-	public BlackFade(bool fadeIn, float fadeSpeed)
-	{
-		setup(fadeIn, fadeSpeed);
-	}
+    private float       m_time;
 
-	public void setup(bool fadeIn, float fadeSpeed)
-	{
-        m_alphaTarget = (fadeIn) ? 0 : 1f;
-		m_fadeIn = fadeIn;
-		m_fadeSpeed = fadeSpeed;
-		reset();
-	}
-	public override void reset()
-	{
-		base.reset();
-		m_started = false;
-	}
+    public BlackFade(){}
 
-	public override void update() 
-	{
+    public BlackFade(Image img, float speed, float alphaFrom, float alphaTo)
+    {
+        setup(img, speed, alphaFrom, alphaTo);
 
+    }
+
+    public void setup(Image img, float speed, float alphaFrom, float alphaTo)
+    {
+        m_img       = img;
+        m_alphaFrom = alphaFrom;
+        m_alphaTo   = alphaTo;
+        m_speed     = speed;
+        m_done      = false;
+        m_time      = 0;
+
+        Color imgColor = img.color;
+        imgColor.a = m_alphaFrom;
+        img.color = imgColor;
        
-		if (!m_started)
-		{
-            if (m_fadeIn)
-			{
-				ScreenFade.instance.hide(m_fadeSpeed, true);
-               
-			}
-			else
-			{
-				ScreenFade.instance.show(m_fadeSpeed, true);
-			}
-			m_started = true;
-		}
-		else
-		{
-            m_done = ScreenFade.instance.getAlpha() == m_alphaTarget;
-		}
-	}
+    }
+
+    public override void update()
+    {
+        Color imgColor = m_img.color;
+
+        imgColor.a = Mathf.Lerp(m_alphaFrom, m_alphaTo, m_time);
+        m_img.color = imgColor;
+
+        m_time += m_speed * Time.deltaTime;
+
+        if (m_time > 1)
+        {
+            m_done = true;
+        }
+    }
 }

@@ -19,7 +19,7 @@ public class EnemyFallNormalItemState  : StateBaseWithActions<AttackItem>
     {
         
         // Find an enemy to hit we need the object
-        m_refObj.EnemyToKill = SceneManager.instance.getEnemyManager().getNextEnemyToKill();
+        m_refObj.EnemyToKill = SceneManager.instance.getEnemyManager().getNextEnemyToKill(m_refObj.getType());
         Vector2 endPos;
         Vector2 startPos;
         m_targetAny = false;
@@ -81,22 +81,14 @@ public class EnemyFallNormalItemState  : StateBaseWithActions<AttackItem>
        }
         base.runState();
     }
-    protected override void actionDone()
+    protected override bool actionDone()
     {
         if( m_curAction == (int)ActionEnum.AE_GODOWN )
         {
             SoundManager.instance.PlaySound(SoundManager.instance.m_hitEnemy, false, 1);
-            
             m_refObj.enableCollider2D(false);
-            if (m_refObj.EnemyToKill == null)
-            {
-                curStep = StateStep.SSRuning;
-                return;
-            }
         }
-        
-
-        base.actionDone();
+        return base.actionDone();
     }
 
     public override void endState()

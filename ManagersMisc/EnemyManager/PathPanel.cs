@@ -38,17 +38,19 @@ public class pathColumn
 
 public class PathPanel : MonoBehaviour 
 {
-    private const int NUM_COLS      = 5;
-    private const int NUM_ROWS      = 6;
+    public  const int NUM_COLS      = 5;
+    public  const int NUM_ROWS      = 6;
     private const int FAST_MOVE_ROW = 4;
 
     private pathColumn[]    m_columns;
     private int[]           m_freeNodes;
+    private int[]           m_topUsedNodes;
 
 	void Start () 
     {
         buildPathPanel();
-        m_freeNodes = new int[NUM_COLS];
+        m_freeNodes     = new int[NUM_COLS];
+        m_topUsedNodes  = new int[NUM_COLS];
 	}
 
 
@@ -75,6 +77,58 @@ public class PathPanel : MonoBehaviour
         if (row < 0 || row >= NUM_ROWS) return null;
 
         return m_columns[col].m_nodes[row];
+    }
+
+    public int[] getTopMostNodes()
+    {
+        
+        for (int colIndex = 0; colIndex < NUM_COLS; colIndex++)
+        {
+            m_topUsedNodes[colIndex] = -1;
+            for (int rowIndex = 0; rowIndex < NUM_ROWS; rowIndex++)
+            {
+                if (m_columns[colIndex].m_nodes[rowIndex].m_refEnemy != null)
+                {
+                   m_topUsedNodes[colIndex] = rowIndex;
+                   rowIndex = NUM_ROWS;
+                }
+            }
+        }
+        return m_topUsedNodes;
+    }
+
+    public pathNode getTopMostNode(bool isRandom)
+    {
+        pathNode returnNode = null; 
+        for (int colIndex = 0; colIndex < NUM_COLS; colIndex++)
+        {
+            m_topUsedNodes[colIndex] = -1;
+            for (int rowIndex = 0; rowIndex < NUM_ROWS; rowIndex++)
+            {
+                if (m_columns[colIndex].m_nodes[rowIndex].m_refEnemy != null)
+                {
+                    if (returnNode == null)
+                    {
+                         returnNode = m_columns[colIndex].m_nodes[rowIndex];
+                    }
+                    else if(returnNode.m_row >= m_columns[colIndex].m_nodes[rowIndex].m_row)
+                    {
+                        if (isRandom && returnNode.m_row == m_columns[colIndex].m_nodes[rowIndex].m_row)
+                        {
+                            float randomNum = Random.Range(0, 10);
+                            returnNode = (randomNum > 5)?m_columns[colIndex].m_nodes[rowIndex]: returnNode;
+                        }
+                        else
+                        {
+                            returnNode = m_columns[colIndex].m_nodes[rowIndex];
+                        }
+                        
+                    }
+                    rowIndex = NUM_ROWS;
+                }
+            }
+        }
+        return returnNode;
     }
 
     public pathNode getFreeStartNode()

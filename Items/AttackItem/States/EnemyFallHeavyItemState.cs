@@ -3,27 +3,28 @@ using System.Collections;
 
 public class EnemyFallHeavyItemState : StateBaseWithActions<AttackItem>
 {
-    private enum ActionEnum { AE_GODOWN, AE_HIT, AE_BOUNCEFALL, AE_Length }
+    private enum ActionEnum { AE_GODOWN, AE_HIT, AE_Length }
 
-    //private bool m_targetAny;
+    private int prevNodeRowHit;
 
     public EnemyFallHeavyItemState(AttackItem refItem)
         : base(refItem)
     {
         m_actions                                   = new StateActionBase[(int)ActionEnum.AE_Length];
         m_actions[(int)ActionEnum.AE_GODOWN]        = new movAtoB();
-        m_actions[(int)ActionEnum.AE_HIT]           = new waitTime(0.05f);
-        m_actions[(int)ActionEnum.AE_BOUNCEFALL]    = new movFall();
+        m_actions[(int)ActionEnum.AE_HIT]           = new waitTime(0.2f);
+      
     }
 
     public override void initState()
     {
         Debug.Log("fall Heavy init");
         // Find an enemy to hit we need the object
-        m_refObj.EnemyToKill = SceneManager.instance.getEnemyManager().getNextEnemyToKill();
+        m_refObj.EnemyToKill = SceneManager.instance.getEnemyManager().getNextEnemyToKill(m_refObj.getType());
         Vector2 endPos;
         Vector2 startPos;
-                
+
+        prevNodeRowHit = -1;
 
         m_refObj.enableCollider2D(true);
 
@@ -47,10 +48,10 @@ public class EnemyFallHeavyItemState : StateBaseWithActions<AttackItem>
 
         ((movAtoB)m_actions[(int)ActionEnum.AE_GODOWN]).setup(m_refObj.gameObject, startPos, endPos, 0.5f, 0);
         
-        Vector2 startSpeed = new Vector2(Random.Range(-0.25f, 0.25f), 1f).normalized * 8;
-        ((movFall)m_actions[(int)ActionEnum.AE_BOUNCEFALL]).setup(m_refObj.GetComponent<Transform>(), startSpeed,
-                                                                -20f, ViewManager.instance.getBottomScreenY() - 1,
-                                                                Random.Range(100, 150));
+        //Vector2 startSpeed = new Vector2(Random.Range(-0.25f, 0.25f), 1f).normalized * 8;
+        //((movFall)m_actions[(int)ActionEnum.AE_BOUNCEFALL]).setup(m_refObj.GetComponent<Transform>(), startSpeed,
+                                                                //-20f, ViewManager.instance.getBottomScreenY() - 1,
+                                                                //Random.Range(100, 150));
 
         m_curAction = (int)ActionEnum.AE_GODOWN;
         curStep     = StateStep.SSRuning;
@@ -60,36 +61,47 @@ public class EnemyFallHeavyItemState : StateBaseWithActions<AttackItem>
     {
        if(m_curAction == (int)ActionEnum.AE_GODOWN)
        {
-
-           if(m_refObj.GetComponent<Transform>().position.y < ViewManager.instance.getBottomScreenY())
-           {
-               m_actions[m_curAction].forceDone();
-           }
-           
             Enemy collidedEnemy = m_refObj.CollidedEnemy;
-            if (collidedEnemy != null)
+
+            if(m_refObj.GetComponent<Transform>().position.y < ViewManager.instance.getBottomScreenY())
             {
+                m_actions[m_curAction].forceDone();
+            }
+            else if (collidedEnemy != null && collidedEnemy.getNodeRow() != prevNodeRowHit)
+            {
+                prevNodeRowHit = collidedEnemy.getNodeRow();
                 SoundManager.instance.PlaySound(SoundManager.instance.m_hitEnemy, false, 1);
                 collidedEnemy.kill(m_refObj.getType(), true);
+                m_actions[m_curAction].forceDone();
             }
             // if enemy has moved in the x axis and is not in line for the attack (when enemy jumps on target) then we use the next enemy in line to attack.
        }
         base.runState();
     }
-    protected override void actionDone()
+    protected override bool actionDone()
     {
-        if( m_curAction == (int)ActionEnum.AE_GODOWN )
+        if (m_curAction == (int)ActionEnum.AE_GODOWN)
         {
-            m_refObj.enableCollider2D(false);
-            if (m_refObj.EnemyToKill == null)
+            if (m_refObj.GetComponent<Transform>().position.y <= ViewManager.instance.getBottomScreenY())
             {
-                curStep = StateStep.SSRuning;
-                return;
+                curStep = StateStep.SSEnd;
+            }
+            else
+            {
+                return base.actionDone();
             }
         }
-        
+        else if (m_curAction == (int)ActionEnum.AE_HIT)
+        {
+            m_curAction = (int)ActionEnum.AE_GODOWN;
+        }
+        else 
+        {
+            return base.actionDone();
+        }
 
-        base.actionDone();
+        return false;
+        
     }
 
     public override void endState()

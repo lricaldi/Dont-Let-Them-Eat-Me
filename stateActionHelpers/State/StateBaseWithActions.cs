@@ -20,16 +20,17 @@ public class StateBaseWithActions<T> : StateBase<T>
         {
             m_actions[m_curAction].reset();
             
-            actionDone();
-            m_curAction++;
+            if(actionDone())
+                m_curAction++;
         }
     }
 
-    protected virtual void actionDone()
+    protected virtual bool actionDone()
     {
         if (m_curAction+1 >= m_actions.Length)
         {
             curStep = StateStep.SSEnd;
         }
+        return true;
     }
 }

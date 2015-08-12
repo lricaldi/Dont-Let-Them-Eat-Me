@@ -33,7 +33,7 @@ public class EnemyEatingState : StateBaseWithActions<Enemy>
     }
 
 
-    protected override void actionDone()
+    protected override bool actionDone()
     {
         if (m_curAction == (int)ActionEnum.AE_WAIT)
         {
@@ -42,12 +42,22 @@ public class EnemyEatingState : StateBaseWithActions<Enemy>
 
             SoundManager.instance.PlaySound(SoundManager.instance.m_enemyJump, false, 2);
         }
-        base.actionDone();
+        return base.actionDone();
     }
     
     public override void runState()
     {
-        if (m_curAction == (int)ActionEnum.AE_JUMPTOEAT && m_tryToAttach)
+
+        if (m_curAction == (int)ActionEnum.AE_JUMPTOEAT && m_refObj.GetComponent<Transform>().position.y < ViewManager.instance.getBottomScreenY())
+        {
+            m_actions[m_curAction].forceEndAction();
+            curStep = StateStep.SSEnd;
+            Debug.Log("HIT BOTTOM");
+            return;
+            
+        }
+
+        else if (m_curAction == (int)ActionEnum.AE_JUMPTOEAT && m_tryToAttach)
         {
            
             m_curRotation += m_rotation;
@@ -70,10 +80,10 @@ public class EnemyEatingState : StateBaseWithActions<Enemy>
                 Transform attachTrans = SceneManager.instance.getEnemyTarget().attachEnemy(m_refObj);
                 if (attachTrans != null)
                 {
-
                     m_refObj.GetComponent<Transform>().position = attachTrans.position;
-                    m_refObj.GetComponent<Transform>().rotation = attachTrans.rotation;
-                    m_refObj.GetComponent<Transform>().localScale = new Vector3(0.9f, 0.9f, 1);
+                    m_refObj.getView().GetComponent<Transform>().rotation = attachTrans.rotation;
+                    m_refObj.getView().GetComponent<Transform>().localScale = new Vector3(0.75f, 0.75f, 1);
+                  
 
                     m_actions[m_curAction].forceEndAction();
                 }
@@ -84,20 +94,13 @@ public class EnemyEatingState : StateBaseWithActions<Enemy>
             }
             
         }
-        else if (m_curAction == (int)ActionEnum.AE_JUMPTOEAT)
-        {
-            if (m_refObj.GetComponent<Transform>().position.y < ViewManager.instance.getBottomScreenY())
-            {
-                m_actions[m_curAction].forceEndAction();
-                curStep = StateStep.SSEnd;
-                return;
-            }
-        }
+         
         base.runState();
     }
  
     public override void endState()
     {
+        Debug.Log("END");
         m_refObj.setCurrentState(Enemy.StateEnum.SE_DEAD);
         resetState();
     }

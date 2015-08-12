@@ -39,6 +39,11 @@ public class ItemBeltDefaultState : StateBase<ItemsBelt>
         curStep = StateStep.SSRuning;
     }
 
+    public bool hasWordMatch()
+    {
+        return m_wordMatch;
+    }
+
     public  override void runState()
 	{
         

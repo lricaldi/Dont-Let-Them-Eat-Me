@@ -30,7 +30,7 @@ public class EnemyIdleState : StateBaseWithActions<Enemy>
     }
 
     
-    protected override void actionDone()
+    protected override bool actionDone()
     {
         if (m_curAction == (int)ActionEnum.AE_WAIT)
         {
@@ -64,6 +64,7 @@ public class EnemyIdleState : StateBaseWithActions<Enemy>
                 curStep = StateStep.SSEnd;
             }
         }
+        return true;
     }
 
     public override void endState()

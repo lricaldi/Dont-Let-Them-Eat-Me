@@ -25,7 +25,7 @@ public class EnemyTarget : MonoBehaviour
 
     private int                 m_health;
     private GameObject          m_targetView;
-    public int                 m_numAttachedEnemies;
+    public int                  m_numAttachedEnemies;
     StateBase<EnemyTarget>[]    m_states;
     private int                 m_curState;
     private List<Enemy>         m_enemiesAttached;
@@ -114,7 +114,7 @@ public class EnemyTarget : MonoBehaviour
     
     public Transform attachEnemy(Enemy enemy)
     {
-        Debug.Log("m_numAttachedEnemies " + m_numAttachedEnemies);
+        //Debug.Log("m_numAttachedEnemies " + m_numAttachedEnemies);
         if (m_numAttachedEnemies >= MAX_ATTACH)
         {
             return null;
@@ -134,7 +134,7 @@ public class EnemyTarget : MonoBehaviour
                 break;
             }
         }
-        Debug.Log("returnValue " + returnValue);
+        //Debug.Log("returnValue " + returnValue);
         return returnValue;
     }
 
@@ -147,7 +147,7 @@ public class EnemyTarget : MonoBehaviour
 
     public bool canAttachEnemy()
     {
-        return m_numAttachedEnemies < MAX_ATTACH;
+        return (m_numAttachedEnemies < MAX_ATTACH && !SceneManager.instance.isGameFinished());
     }
 
 	void Update () 

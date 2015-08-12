@@ -21,6 +21,8 @@ public class SceneManager : MonoBehaviour
     private ItemsBelt       m_itemsBelt;
     private UIScript        m_UIScript;
 
+    private bool            m_gameFinished;
+
     void Awake()
     {
         if (instance == null)
@@ -29,6 +31,8 @@ public class SceneManager : MonoBehaviour
             Destroy(gameObject);
 
         hashIDs = GetComponent<HashIDs>();
+        
+        m_gameFinished = false;
     }
 
 
@@ -72,7 +76,11 @@ public class SceneManager : MonoBehaviour
 
     public void targetDied()
     {
-        sceneEvent(SceneEvent.SE_TARGETDIED, 0);
+        if (!m_gameFinished)
+        {
+            m_gameFinished = true;
+            sceneEvent(SceneEvent.SE_TARGETDIED, 0);
+        }
     }
 
     public void attackItemLaunched()
@@ -87,7 +95,11 @@ public class SceneManager : MonoBehaviour
 
     public void targetWon()
     {
-        sceneEvent(SceneEvent.SE_TARGETWON, 0);
+        if (!m_gameFinished)
+        {
+            m_gameFinished = true;
+            sceneEvent(SceneEvent.SE_TARGETWON, 0);
+        }
     }
 
     public void lockInput(bool doLock)
@@ -147,12 +159,17 @@ public class SceneManager : MonoBehaviour
        
     }
 
+    public bool isGameFinished()
+    {
+        return m_gameFinished;
+    }
+
     public void debugEnemiesInPath()
     {
         m_enemyMan.DebugEnemiesInPath();
     }
 
-    public void showWordClue(int beltItemPos)
+    public void showWordClue(int beltItemPos, bool doSHow)
     {
         getUIScript().showClue(getItemsBelt().getBeltItemName(beltItemPos), true);
     }
