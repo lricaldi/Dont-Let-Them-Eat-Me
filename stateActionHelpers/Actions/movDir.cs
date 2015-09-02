@@ -18,12 +18,12 @@ public class movDir : StateActionBase
 		
 	}
 
-	public override void update()
+    public override void update(float delta)
 	{
 		if (!m_done)
 		{
 			Vector2 curPos = m_obj.GetComponent<Transform>().position;
-			curPos += m_direction * m_speed * Time.deltaTime;
+            curPos += m_direction * m_speed * delta;
 			m_obj.GetComponent<Transform>().position = curPos;
 		}
 	}

@@ -17,9 +17,10 @@ public class EnemyFallNormalItemState  : StateBaseWithActions<AttackItem>
 
     public override void initState()
     {
-        
+
+        m_refObj.setLayer("default", 3);
         // Find an enemy to hit we need the object
-        m_refObj.EnemyToKill = SceneManager.instance.getEnemyManager().getNextEnemyToKill(m_refObj.getType());
+        m_refObj.EnemyToKill = SceneManager.instance.getEnemyManager().getNextEnemyToKill(m_refObj.getEffectType());
         Vector2 endPos;
         Vector2 startPos;
         m_targetAny = false;
@@ -56,7 +57,7 @@ public class EnemyFallNormalItemState  : StateBaseWithActions<AttackItem>
         curStep     = StateStep.SSRuning;
     }
 
-    public override void runState()
+    public override void runState(float delta)
     {
        if(m_curAction == (int)ActionEnum.AE_GODOWN)
        {
@@ -72,14 +73,14 @@ public class EnemyFallNormalItemState  : StateBaseWithActions<AttackItem>
                 if(m_targetAny || collidedEnemy.GetInstanceID() == m_refObj.EnemyToKill.GetInstanceID())
                 {
                     //m_refObj.EnemyToKill.kill();
-                    collidedEnemy.kill(m_refObj.getType(), true);
+                    collidedEnemy.kill(m_refObj.getEffectType(), true);
                     m_refObj.EnemyToKill = null;
                     m_actions[m_curAction].forceDone();
                 }
             }
             // if enemy has moved in the x axis and is not in line for the attack (when enemy jumps on target) then we use the next enemy in line to attack.
        }
-        base.runState();
+       base.runState(delta);
     }
     protected override bool actionDone()
     {

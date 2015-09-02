@@ -36,8 +36,8 @@ public class movAtoB : StateActionBase
 		
 	}
 
-	
-	public override void update()
+
+    public override void update(float delta)
 	{
         if(!m_started)
         {
@@ -50,7 +50,7 @@ public class movAtoB : StateActionBase
 		else if(!m_done)
 		{
 
-            m_curTime += m_movSpeed * Time.deltaTime;
+            m_curTime += m_movSpeed * delta;
 
 
             if (m_curTime >= 1f)

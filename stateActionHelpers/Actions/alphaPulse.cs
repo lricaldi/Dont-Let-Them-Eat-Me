@@ -50,11 +50,11 @@ public class alphaPulse : StateActionBase
 	}
 
 	
-	public override void update()
+	public override void update(float delta)
 	{
         if (m_fadingOut)
         {
-            m_alphaValue -= m_speed * Time.deltaTime;
+            m_alphaValue -= m_speed * delta;
             if (m_alphaValue <= m_minAlpha)
             {
                 m_alphaValue = m_minAlpha;
@@ -67,7 +67,7 @@ public class alphaPulse : StateActionBase
         }
         else
         {
-            m_alphaValue += m_speed * Time.deltaTime;
+            m_alphaValue += m_speed * delta;
             if (m_alphaValue >= m_maxAlpha)
             {
                 m_alphaValue = m_maxAlpha;
@@ -79,8 +79,8 @@ public class alphaPulse : StateActionBase
             }
         }
 
-      
-        m_speed += m_acceleration * Time.deltaTime;
+
+        m_speed += m_acceleration * delta;
         if (m_speed > m_maxSpeed) { m_speed =  m_maxSpeed;}
         if (m_speed < 0.02f) { m_speed = 0.02f; }
 

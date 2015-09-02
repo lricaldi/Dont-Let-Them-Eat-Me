@@ -14,6 +14,9 @@ public class EnemyDeadState : StateBaseWithActions<Enemy>
 
     public override void initState()
     {
+        m_refObj.getView().showEffectBG(false);
+        m_refObj.setUpdateSpeed(0.02f);
+
         Transform rotTransform = m_refObj.doesEffectRotate() ? m_refObj.GetComponent<Transform>() : m_refObj.getView().GetComponent<Transform>();
         
         Vector2 startSpeed = new Vector2(Random.Range(-0.25f, 0.25f), 1f).normalized * 8;

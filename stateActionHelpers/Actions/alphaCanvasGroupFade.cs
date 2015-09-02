@@ -32,10 +32,10 @@ public class alphaCanvasGroupFade : StateActionBase
        
     }
 
-    public override void update()
+    public override void update(float delta)
     {
         m_cg.alpha = Mathf.Lerp(m_alphaFrom, m_alphaTo, m_time);
-        m_time += m_speed * Time.deltaTime;
+        m_time += m_speed * delta;
 
         if (m_time > 1)
         {

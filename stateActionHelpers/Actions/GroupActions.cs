@@ -23,27 +23,25 @@ public class GroupActions : StateActionBase
 		m_actions = actions;
 		reset();
 	}
-	public override void update() 
+	public override void update(float delta) 
 	{
-		m_timer += Time.deltaTime;
+        m_timer += delta;
 		bool allDone = true;
 		if (!m_done)
 		{
 			for (int i = 0; i < m_actions.Length; i++)
 			{
-               // Debug.Log(" done " + m_actions[i].isDone());
 				if (!m_actions[i].isDone())
 				{
 					allDone = false;
                     
 					if (m_timer > m_actions[i].getStartTime())
 					{
-						m_actions[i].update();
+                        m_actions[i].update(delta);
 					}
 				}
 			}
 			m_done = allDone;
-            //Debug.Log("AllDone " + m_done);
 		}
 	}
 	

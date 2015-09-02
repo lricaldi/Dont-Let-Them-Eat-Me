@@ -6,6 +6,7 @@ public class ItemBeltDefaultState : StateBase<ItemsBelt>
     private const float MOVEMENT_SPEED = 4;
     private const float TOUCH_ITEM_HINT_TIME = 5;
 
+    private Color m_darkRed;
 
     private enum ItemDirectionMove { IDM_LEFT, IDM_RIGHT, IDM_NONE }
     
@@ -32,10 +33,14 @@ public class ItemBeltDefaultState : StateBase<ItemsBelt>
         m_beltMovingDirection   = ItemDirectionMove.IDM_NONE;
         m_wordMatch = false;
         m_timer = 0;
+
+        m_darkRed = new Color(0.59f,0,0);
     }
 
     public  override void initState()
     {
+        m_refObj.setUpdateTime(0.03f);
+        setupLayerOrder();
         curStep = StateStep.SSRuning;
     }
 
@@ -44,32 +49,32 @@ public class ItemBeltDefaultState : StateBase<ItemsBelt>
         return m_wordMatch;
     }
 
-    public  override void runState()
+    public  override void runState(float delta)
 	{
         
         if (m_wordMatch )
         {
-            m_timer += Time.deltaTime;
+            m_timer += delta;
             if (m_timer > TOUCH_ITEM_HINT_TIME)
             {
-                Debug.Log("trigger touch");
                 SceneManager.instance.getUIScript().showShotTouch();
                 m_timer = 0;
             }
         }
         if (!isFocusItemInCenterPos() && m_beltMovingDirection == ItemDirectionMove.IDM_NONE)
         {
-
+            
             m_beltMovingDirection = findFocusItemNextMove();
             moveItems();
         }
         else if (m_beltMovingDirection != ItemDirectionMove.IDM_NONE)
         {
-            m_moveGroup.update();
+            m_moveGroup.update(delta);
             if (m_moveGroup.isDone())
             {
                 m_moveGroup.reset();
                 m_beltMovingDirection = ItemDirectionMove.IDM_NONE;
+                
             }
 
         }
@@ -85,7 +90,22 @@ public class ItemBeltDefaultState : StateBase<ItemsBelt>
 
     /* Helper functions*/
     /***********************************************************************************************************/
-   
+
+    private void setupLayerOrder()
+    {
+        for (int i = 0; i < ItemsBelt.NUM_OF_ITEMS; i++)
+        {
+    
+            m_refObj.Items[i].ItemView.GetComponent<SpriteRenderer>().sortingOrder = m_refObj.LayerOrders[m_refObj.Items[i].Position] + 1;
+           /* if (m_refObj.Items[i].ItemView.getEffectBGTransform() != null)
+            {
+                m_refObj.Items[i].ItemView.getEffectBGTransform().GetComponent<SpriteRenderer>().sortingOrder = m_refObj.LayerOrders[m_refObj.Items[i].Position] - 1;
+            }*/
+
+
+        }
+    }
+
     private bool isFocusItemInCenterPos()
     {
         return m_refObj.Items[m_refObj.FocusItem].Position == ItemsBelt.FOCUS_POS_INDEX;
@@ -117,7 +137,13 @@ public class ItemBeltDefaultState : StateBase<ItemsBelt>
 
             m_refObj.Items[i].Position                                              = nextPos;
             m_refObj.Items[i].GetComponent<Transform>().localScale                  = m_refObj.Scales[nextPos];
-            m_refObj.Items[i].ItemView.GetComponent<SpriteRenderer>().sortingOrder  = m_refObj.LayerOrders[nextPos];
+            m_refObj.Items[i].ItemView.GetComponent<SpriteRenderer>().sortingOrder  = m_refObj.LayerOrders[nextPos]+1;
+            /*if (m_refObj.Items[i].ItemView.getEffectBGTransform() != null)
+            {
+                m_refObj.Items[i].ItemView.getEffectBGTransform().GetComponent<SpriteRenderer>().sortingOrder = m_refObj.LayerOrders[nextPos] - 1;
+            }*/
+
+            
         }
     }
 
@@ -132,10 +158,10 @@ public class ItemBeltDefaultState : StateBase<ItemsBelt>
 
     }
 
-    private bool itemsAreMoving()
+    /*private bool itemsAreMoving()
     {
         return !m_moveGroup.isDone();
-    }
+    }*/
     
     public void wordUpdated(string newWord)
     {
@@ -154,16 +180,18 @@ public class ItemBeltDefaultState : StateBase<ItemsBelt>
             }
          }
 
-        SceneManager.instance.getUIScript().updateInputWordColor((containsSubString)?Color.green:Color.red);
+        SceneManager.instance.getUIScript().updateInputWordColor((containsSubString) ? Color.white : m_darkRed);
         m_wordMatch = m_refObj.InputWord == m_refObj.Items[m_refObj.FocusItem].ItemName;
         m_timer = 0;
         m_refObj.ItemReady.SetActive(m_wordMatch);
+        
             
         
     }
 
     public void trySubmitWord(string newWord)
     {
+        if (m_beltMovingDirection != ItemDirectionMove.IDM_NONE) return;
         if (m_refObj.InputWord == m_refObj.Items[m_refObj.FocusItem].ItemName || m_refObj.debugFireItem)
         {
             SoundManager.instance.PlaySound(SoundManager.instance.m_correctWord, false, 1);

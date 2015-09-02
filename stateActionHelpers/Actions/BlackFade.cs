@@ -34,14 +34,14 @@ public class BlackFade : StateActionBase{
        
     }
 
-    public override void update()
+    public override void update(float delta)
     {
         Color imgColor = m_img.color;
 
         imgColor.a = Mathf.Lerp(m_alphaFrom, m_alphaTo, m_time);
         m_img.color = imgColor;
 
-        m_time += m_speed * Time.deltaTime;
+        m_time += m_speed * delta;
 
         if (m_time > 1)
         {

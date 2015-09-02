@@ -21,6 +21,8 @@ public class EnemyEatingState : StateBaseWithActions<Enemy>
 
     public override void initState()
     {
+       
+        m_refObj.setUpdateSpeed(0.03f);
         ((movArc)m_actions[(int)ActionEnum.AE_JUMPTOEAT]).setup(m_refObj.gameObject, m_refObj.GetComponent<Transform>().position,
                                                                 ViewManager.instance.getTargetPos().position, 6f, 0, -0.01f);
 
@@ -37,22 +39,22 @@ public class EnemyEatingState : StateBaseWithActions<Enemy>
     {
         if (m_curAction == (int)ActionEnum.AE_WAIT)
         {
+            m_refObj.getView().showEffectBG(false);
             m_refObj.freeNode();
             SceneManager.instance.getEnemyManager().removeFromPath(m_refObj);
 
-            SoundManager.instance.PlaySound(SoundManager.instance.m_enemyJump, false, 2);
+            SoundManager.instance.PlaySound(SoundManager.instance.m_enemyJump, false, 1);
         }
         return base.actionDone();
     }
     
-    public override void runState()
+    public override void runState(float delta)
     {
 
         if (m_curAction == (int)ActionEnum.AE_JUMPTOEAT && m_refObj.GetComponent<Transform>().position.y < ViewManager.instance.getBottomScreenY())
         {
             m_actions[m_curAction].forceEndAction();
             curStep = StateStep.SSEnd;
-            Debug.Log("HIT BOTTOM");
             return;
             
         }
@@ -95,12 +97,11 @@ public class EnemyEatingState : StateBaseWithActions<Enemy>
             
         }
          
-        base.runState();
+        base.runState(delta);
     }
  
     public override void endState()
     {
-        Debug.Log("END");
         m_refObj.setCurrentState(Enemy.StateEnum.SE_DEAD);
         resetState();
     }

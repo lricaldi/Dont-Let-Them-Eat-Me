@@ -49,7 +49,7 @@ public class movAtoBGroup : StateActionBase
 		reset();
 	}
 
-	public override void update()
+    public override void update(float delta)
 	{
 		if (m_timer == 0)
 		{
@@ -59,7 +59,7 @@ public class movAtoBGroup : StateActionBase
 				movItems[i].obj.SetActive(true);
 			}
 		}
-		m_timer += Time.deltaTime;
+        m_timer += delta;
 		bool allDone = true;
 		if (!m_done)
 		{
@@ -71,7 +71,7 @@ public class movAtoBGroup : StateActionBase
 				if (m_timer >  movItems[i].startTime)
 				{
 					Vector2 curPos = movItems[i].obj.GetComponent<Transform>().position;
-					curPos += movItems[i].direction * movItems[i].speed * Time.deltaTime;
+                    curPos += movItems[i].direction * movItems[i].speed * delta;
 
 					movItems[i].obj.GetComponent<Transform>().position = curPos;
 

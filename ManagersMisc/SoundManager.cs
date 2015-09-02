@@ -4,14 +4,13 @@ using System.Collections;
 public class SoundManager : MonoBehaviour {
 
 
-    public AudioSource fxSourceChOne;
-    public AudioSource fxSourceChTwo;
+    public AudioSource[] fxSourceCh;
+    /*public AudioSource fxSourceChTwo;
+    public AudioSource fxSourceChThree;*/
     public AudioSource musicSource;
 
     [HideInInspector]
-    public AudioClip    m_music;
-    [HideInInspector]
-    public AudioClip    m_music02;
+    public AudioClip    m_inGameMusic;
     [HideInInspector]
     public AudioClip    m_musicTitle;
     [HideInInspector]
@@ -50,8 +49,7 @@ public class SoundManager : MonoBehaviour {
 
 
         m_typeSound     = Resources.Load<AudioClip>("Audio/Effects/TypeSound");
-        m_music         = Resources.Load<AudioClip>("Audio/Music/Music01");
-        m_music02       = Resources.Load<AudioClip>("Audio/Music/Music02");
+        m_inGameMusic   = Resources.Load<AudioClip>("Audio/Music/inGameMusic");
         m_musicTitle    = Resources.Load<AudioClip>("Audio/Music/TitleScreenMusicPlaceHolder");
         
 
@@ -63,23 +61,20 @@ public class SoundManager : MonoBehaviour {
 
         m_wrongInput    = Resources.Load<AudioClip>("Audio/Effects/wrongInput");
 
-        PlayMusic(m_music02, true);
+        PlayMusic(m_inGameMusic, true);
     }
 
     public void PlaySound(AudioClip clip, bool loop, int channel)
     {
-        if (channel == 1)
+        if (channel < 0 || channel  >= fxSourceCh.Length)
         {
-            fxSourceChOne.clip = clip;
-            fxSourceChOne.loop = loop;
-            fxSourceChOne.Play();
+            channel = 0;
         }
-        else
-        {
-            fxSourceChTwo.clip = clip;
-            fxSourceChTwo.loop = loop;
-            fxSourceChTwo.Play();
-        }
+       
+            fxSourceCh[channel].clip = clip;
+            fxSourceCh[channel].loop = loop;
+            fxSourceCh[channel].Play();
+        
        
     
     }

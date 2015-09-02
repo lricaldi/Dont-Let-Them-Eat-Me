@@ -20,18 +20,16 @@ public class waitTime : StateActionBase
 	public void setup(float timeToWait)
 	{
 		
-		/*if (timeToWait == 0)
-		{ Debug.Log(" WaitTime action set to wait forever."); }*/
 		m_timeToWait = timeToWait;
 		m_curWaitTime = 0;
 		reset();
 	}
-	
-	public override void update()
+
+    public override void update(float delta)
 	{
         if (!m_done && m_timeToWait > 0) // if we pass 0 it will never stop waiting
 		{
-			m_curWaitTime += Time.deltaTime;
+            m_curWaitTime += delta;
 			m_done = m_curWaitTime > m_timeToWait;
 		}
 	

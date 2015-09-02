@@ -9,10 +9,15 @@ public class Enemy : MonoBehaviour
     private int                 m_curState;
     private pathNode            m_node;
     private EnemyView           m_enemyView;
-    private bool                m_ready;
+    
     private FXBase              m_effect;
+    
+    private float               m_updateTime = float.MaxValue;
+    private float               m_timer = 0;
 
-    //private BeltItem.EffectTypeEnum m_effectType;
+    private BeltItem.EffectTypeEnum m_hitEffect;
+
+    
 
     public BeltItem.EffectTypeEnum EffectType
     {
@@ -26,15 +31,17 @@ public class Enemy : MonoBehaviour
     {
         m_node      = null;
         m_enemyView = null;
-        m_ready     = false;
+        m_updateTime = float.MaxValue;
+        m_hitEffect = BeltItem.EffectTypeEnum.ETE_NORMAL;
     }
 
     public void setNodeAndView(pathNode node, EnemyView enemyView)
     {
         m_node          = node;
-        //m_node.m_inUse  = true;
+ 
         node.m_refEnemy = this;
         m_enemyView     = enemyView;
+        m_enemyView.showEffectBG(true);
     }
 
     public Animator getViewAnimator()
@@ -57,7 +64,19 @@ public class Enemy : MonoBehaviour
 
     public void setReady(bool isReady)
     {
-        m_ready = isReady;
+        if (isReady)
+        {
+            m_updateTime = 0.01f;
+        }
+        else
+        {
+            m_updateTime = float.MaxValue;
+        }
+    }
+
+    public void setUpdateSpeed(float updateSpeed)
+    {
+        m_updateTime = updateSpeed;
     }
 
     public void setCurrentState(StateEnum newState)
@@ -103,13 +122,11 @@ public class Enemy : MonoBehaviour
 
 	void Update () 
     {
-        if(m_ready)
+        m_timer += Time.deltaTime;
+        if (m_timer >= m_updateTime)
         {
-        	/*if(GetComponent<Transform>().position.y < ViewManager.instance.getBottomScreenY() - 5)
-        	{
-        		kill(BeltItem.EffectTypeEnum.ETE_NORMAL);
-        	}*/
-            m_states[m_curState].updateState();
+            m_states[m_curState].updateState(m_timer);
+            m_timer = 0;
         }
 	}
 
@@ -146,20 +163,25 @@ public class Enemy : MonoBehaviour
             m_effect.endEffect();
             m_effect = null;
         }
-        
+        m_updateTime = float.MaxValue;
         InstanceFactory.instance.freeEnemy(this);
         SceneManager.instance.getEnemyManager().enemyKilled();
     }
 
     public bool doesEffectRotate()
     {
-        return (m_effect != null && (m_enemyView.m_type == BeltItem.EffectTypeEnum.ETE_ICE));
+        return (m_effect != null && (m_hitEffect == BeltItem.EffectTypeEnum.ETE_ICE));
     }
 
-
+    public bool isDead()
+    {
+        return (m_curState == (int)StateEnum.SE_DEAD);
+    }
     public void kill(BeltItem.EffectTypeEnum effectType, bool propagate = false)
     {
-        if (m_curState == (int)StateEnum.SE_DEAD) return;
+
+        m_hitEffect = effectType;
+
         m_effect = null;
         switch(effectType)
         {
@@ -197,7 +219,10 @@ public class Enemy : MonoBehaviour
         }
 
         SceneManager.instance.getUIScript().getEnemyCounter().updateCounter(-1);
+        
         m_states[m_curState].resetState();
+
+        m_updateTime = 0.03f;
         m_curState = (int)StateEnum.SE_DEAD;
         
     }

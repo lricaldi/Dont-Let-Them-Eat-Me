@@ -10,7 +10,6 @@ public class FXFire01 : FXBase
 
     public override void endEffect()
 	{
-        //Debug.Log("endEffect");
 		GetComponent<Animator>().ResetTrigger("endEffect");
 		EffectsManager.instance.freeEffect(this);
 	}

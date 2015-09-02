@@ -15,13 +15,19 @@ public class UIMenuScript : MonoBehaviour
 
     void Update()
     {
-        m_wobbleStart.update();
+        m_wobbleStart.update(Time.deltaTime);
     }
 
     public void pressStartButton()
     {
-        Debug.Log("Start button pressed");
+        
         Application.LoadLevel("Game");
+    }
+    
+    public void pressQuitButton()
+    {
+        
+        Application.Quit();
     }
 
 }

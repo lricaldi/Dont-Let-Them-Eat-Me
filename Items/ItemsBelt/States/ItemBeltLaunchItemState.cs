@@ -17,8 +17,9 @@ public class ItemBeltLaunchItemState : StateBaseWithActions<ItemsBelt>
     public override void initState()
     {
         SceneManager.instance.lockInput(true);
+        m_refObj.ItemReady.SetActive(false);
         setupFocusItemLaunch();
-
+        m_refObj.setUpdateTime(0.5f);
         Vector3 focusItemPos    = m_refObj.Items[m_refObj.FocusItem].GetComponent<Transform>().position;
         focusItemPos.y          = focusItemPos.y - 2;
 
@@ -32,11 +33,19 @@ public class ItemBeltLaunchItemState : StateBaseWithActions<ItemsBelt>
         m_curAction = (int)ActionEnum.AE_WAITSHINE;
         curStep     = StateStep.SSRuning;
     }
-   
+
+
+    protected override bool actionDone()
+    {
+        if (m_curAction == (int)ActionEnum.AE_WAITSHINE)
+        {
+            m_refObj.setUpdateTime(0.03f);
+        }
+        return base.actionDone();
+    }
     private void setupFocusItemLaunch()
     {
 
-        //AttackItem attkItem = SceneManager.instance.getAttackItem();
         AttackItem attkItem = InstanceFactory.instance.getAttackItem(m_refObj.Positions[ItemsBelt.FOCUS_POS_INDEX].position, Quaternion.identity);
         attkItem.setup(m_refObj.Positions[ItemsBelt.FOCUS_POS_INDEX].position,
                         m_refObj.Items[m_refObj.FocusItem].ItemView,

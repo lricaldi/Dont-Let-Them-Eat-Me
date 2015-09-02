@@ -39,7 +39,7 @@ public class runAni : StateActionBase
      
     }
 
-	public override void update()
+    public override void update(float delta)
 	{
         if (!m_started)
         {

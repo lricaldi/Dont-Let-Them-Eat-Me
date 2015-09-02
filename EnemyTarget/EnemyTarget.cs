@@ -114,7 +114,6 @@ public class EnemyTarget : MonoBehaviour
     
     public Transform attachEnemy(Enemy enemy)
     {
-        //Debug.Log("m_numAttachedEnemies " + m_numAttachedEnemies);
         if (m_numAttachedEnemies >= MAX_ATTACH)
         {
             return null;
@@ -134,7 +133,6 @@ public class EnemyTarget : MonoBehaviour
                 break;
             }
         }
-        //Debug.Log("returnValue " + returnValue);
         return returnValue;
     }
 
@@ -152,7 +150,7 @@ public class EnemyTarget : MonoBehaviour
 
 	void Update () 
     {
-        m_states[m_curState].updateState();
+        m_states[m_curState].updateState(Time.deltaTime);
 	}
 
     private void initStates()

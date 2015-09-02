@@ -10,7 +10,7 @@ public class GameKeyboard : MonoBehaviour
     private const int   MAX_WORD_SIZE           = 32;
 
 
-    public enum KeyboardEvent { KE_WORDUPDATE, /*KE_SUBMITWORD,*/ KE_Length}
+    public enum KeyboardEvent { KE_WORDUPDATE, KE_Length}
 
     public delegate void    keyboardEventHandler(KeyboardEvent KBEvent, string valueOne);
     public event            keyboardEventHandler keyboardEvent;
@@ -20,9 +20,9 @@ public class GameKeyboard : MonoBehaviour
     private StringBuilder   m_word;
     private Vector2[]       m_keyPos;
     private Vector2         m_keyPosDEL;
-   // private Vector2         m_keyPosENTER;
+   
     public  Transform       m_buttonTouch;
-    //public  Transform       m_buttonTouchENTER;
+    
     private alphaPulseImage m_alphaPulseAction;
 	
 	void Start () 
@@ -39,7 +39,7 @@ public class GameKeyboard : MonoBehaviour
         }
 
         m_keyPosDEL         = GameObject.Find("Key_DEL").GetComponent<Transform>().position;
-        //m_keyPosENTER       = GameObject.Find("Key_ENTER").GetComponent<Transform>().position;
+        
 
         m_alphaPulseAction  = new alphaPulseImage();
         m_alphaPulseAction.forceDone();
@@ -56,7 +56,7 @@ public class GameKeyboard : MonoBehaviour
 
     public void deleteLetter()
     {
-        SoundManager.instance.PlaySound(SoundManager.instance.m_typeSound, false, 1);
+        SoundManager.instance.PlaySound(SoundManager.instance.m_typeSound, false, 2);
         
         showButtonTouch(m_keyPosDEL, false);
         
@@ -68,15 +68,7 @@ public class GameKeyboard : MonoBehaviour
  
     }
 
-    /*public void enterKey()
-    {
-        SoundManager.instance.PlaySound(SoundManager.instance.m_typeSound, false, 1);
-
-        showButtonTouch(m_keyPosENTER, true);
-                
-        keyboardEvent(KeyboardEvent.KE_SUBMITWORD, null);
-
-    }*/
+   
         
     public void lockKeyboard(bool doLock)
     {
@@ -93,7 +85,7 @@ public class GameKeyboard : MonoBehaviour
     public void inputLetter(string letter)
     {
         showButtonTouch(m_keyPos[(int)letter[0] - LETTER_TO_ARRAY_OFFSET], false);
-        SoundManager.instance.PlaySound(SoundManager.instance.m_typeSound, false, 1);
+        SoundManager.instance.PlaySound(SoundManager.instance.m_typeSound, false, 2);
 
         if (m_keysLocked) return;
 
@@ -112,11 +104,7 @@ public class GameKeyboard : MonoBehaviour
             m_buttonTouch.position = buttonPos;
             m_alphaPulseAction.setup(m_buttonTouch.GetComponent<Image>(), 10f, 15f, 0, 0, 1, 1, false);
         }
-       /* else
-        {
-            //m_buttonTouchENTER.position = buttonPos;
-            m_alphaPulseAction.setup(m_buttonTouchENTER.GetComponent<Image>(), 10f, 15f, 0, 0, 1, 1, false);
-        }*/
+      
     }
 
     
@@ -125,7 +113,7 @@ public class GameKeyboard : MonoBehaviour
     {
         if (!m_alphaPulseAction.isDone())
         {
-            m_alphaPulseAction.update();
+            m_alphaPulseAction.update(Time.deltaTime);
         }
     }
 }

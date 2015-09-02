@@ -55,19 +55,19 @@ public class movFall : StateActionBase
 		
 	}
 
-	
-	public override void update()
+
+    public override void update(float delta)
 	{
-        m_curRotation   += (Time.deltaTime * m_rotateSpeed);
+        m_curRotation += (delta * m_rotateSpeed);
         m_rotation.z    = m_curRotation;
 
         m_objRot.rotation = Quaternion.Euler(m_rotation);
 
         
         Vector2 curPos = m_obj.position;
-        m_curVel += m_fallSpeed * Time.deltaTime;
+        m_curVel += m_fallSpeed * delta;
         //curPos += m_curVel;
-        curPos += (m_curVel * Time.deltaTime);
+        curPos += (m_curVel * delta);
         m_obj.position = curPos;
 
         if (curPos.y < m_yEndFall)

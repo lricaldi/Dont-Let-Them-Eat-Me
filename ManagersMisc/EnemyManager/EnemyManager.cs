@@ -14,15 +14,7 @@ public class EnemyManager : MonoBehaviour
     private bool            m_makeEnemies;
 
     Dictionary<int, Enemy> m_enemiesOnPath;
-    
-    public void DebugEnemiesInPath()
-    {
-        foreach (KeyValuePair<int, Enemy> curEnemy in m_enemiesOnPath)
-        {
-            Debug.Log(" IN PATH " + curEnemy.Value.gameObject.GetInstanceID() + " POS " + curEnemy.Value.GetComponent<Transform>().position);
-        }
-    }
-
+   
     public pathNode getNode(int col, int row)
     {
         return m_pathPanel.getNode(col, row);
@@ -38,48 +30,57 @@ public class EnemyManager : MonoBehaviour
    
 	}
 	
-	// Update is called once per frame
-	void Update () 
-    {
-        if (!m_makeEnemies  || SceneManager.instance.isGameFinished()) return;
-        
-        m_timer += Time.deltaTime;
+	
 
-        if (m_activeEnemies <= 0 && m_enemiesLeft <= 0)
+    IEnumerator createEnemies()
+    { 
+       
+        while (m_makeEnemies && !SceneManager.instance.isGameFinished())
         {
-            SceneManager.instance.targetWon();
-            m_makeEnemies = false;
-        }
-        if (m_timer > CREATE_INTERVAL && m_enemiesLeft >0)
-        {
-            m_timer = 0;
-            pathNode node = m_pathPanel.getFreeStartNode();
-            if (node != null)
+       
+            m_timer += Time.deltaTime;
+
+            if (m_activeEnemies <= 0 && m_enemiesLeft <= 0)
             {
-                m_activeEnemies++;
-                m_enemiesLeft--;
-
-                Enemy newEnemy          = InstanceFactory.instance.getEnemy(node.m_nodeTransform.position, Quaternion.identity);
-                EnemyView newEnemyView  = InstanceFactory.instance.getRandomEnemyView(Vector2.zero, Quaternion.identity);
-
-                newEnemyView.gameObject.GetComponent<Transform>().SetParent(newEnemy.GetComponent<Transform>(), false);
-                newEnemy.reset();
-                newEnemy.setNodeAndView(node, newEnemyView);
-               
-                newEnemy.setupStates();
-                newEnemy.setReady(true);
-                
-                if (!m_enemiesOnPath.ContainsKey(newEnemy.gameObject.GetInstanceID()))
+                SceneManager.instance.targetWon();
+                m_makeEnemies = false;
+            }
+            if (m_timer > CREATE_INTERVAL && m_enemiesLeft > 0)
+            {
+                m_timer = 0;
+                pathNode node = m_pathPanel.getFreeStartNode();
+                if (node != null)
                 {
-                    m_enemiesOnPath.Add(newEnemy.gameObject.GetInstanceID(), newEnemy);
+                    m_activeEnemies++;
+                    m_enemiesLeft--;
+
+                    Enemy newEnemy = InstanceFactory.instance.getEnemy(node.m_nodeTransform.position, Quaternion.identity);
+                    EnemyView newEnemyView = InstanceFactory.instance.getRandomEnemyView(Vector2.zero, Quaternion.identity);
+
+                    newEnemyView.gameObject.GetComponent<Transform>().SetParent(newEnemy.GetComponent<Transform>(), false);
+                    newEnemy.reset();
+                    newEnemy.setNodeAndView(node, newEnemyView);
+
+                    newEnemy.setupStates();
+                    newEnemy.setReady(true);
+
+                    if (!m_enemiesOnPath.ContainsKey(newEnemy.gameObject.GetInstanceID()))
+                    {
+                        m_enemiesOnPath.Add(newEnemy.gameObject.GetInstanceID(), newEnemy);
+                    }
                 }
             }
+            yield return new WaitForSeconds(.01f);
         }
-	}
-
+        
+    }
     public void startMakingEnemies(bool doMake)
     {
         m_makeEnemies = doMake;
+        if (doMake)
+        {
+           StartCoroutine(createEnemies());
+        }
     }
 
     public void enemyKilled()

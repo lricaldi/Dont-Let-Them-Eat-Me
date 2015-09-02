@@ -11,7 +11,7 @@ public class KeyboardHintPanel : ObjectWithStates<KeyboardHintPanel>
     public Transform m_finger;
     public Transform m_CKey;
     public Transform m_AKey;
-    public Transform m_TKey;
+    public Transform m_RKey;
     public Transform m_startPos;
     public Text m_text;
 
@@ -34,12 +34,14 @@ public class KeyboardHintPanel : ObjectWithStates<KeyboardHintPanel>
         m_states = new StateBase<KeyboardHintPanel>[(int)StateEnum.SE_Length];
         m_states[(int)StateEnum.SE_RUNHINT] = new ShowHintPanelState(this);
         m_curState = (int)StateEnum.SE_RUNHINT;
+        gameObject.SetActive(false);
     }
 
     public void StartHint()
     {
         if (!m_showing)
         {
+            gameObject.SetActive(true);
             m_states[(int)StateEnum.SE_RUNHINT].resetState();
             m_showing = true;
         }
@@ -55,11 +57,11 @@ public class KeyboardHintPanel : ObjectWithStates<KeyboardHintPanel>
     }
 
 
-    protected override void update()
+    protected override void update(float delta)
     {
         if (m_showing && m_states != null)
         {
-            base.update();
+            base.update(delta);
         }
     }
 

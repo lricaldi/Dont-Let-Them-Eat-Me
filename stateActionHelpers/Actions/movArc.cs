@@ -44,7 +44,7 @@ public class movArc : StateActionBase
 	}
 
 	
-	public override void update()
+	public override void update(float delta)
 	{
         if(!m_started)
         {
@@ -63,7 +63,7 @@ public class movArc : StateActionBase
          
             Vector2 curPos = m_obj.GetComponent<Transform>().position;
 
-            curPos += (m_velocity * Time.deltaTime);
+            curPos += (m_velocity * delta);
             m_obj.GetComponent<Transform>().position = curPos;
             
 		}

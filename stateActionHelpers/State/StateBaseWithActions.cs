@@ -12,9 +12,9 @@ public class StateBaseWithActions<T> : StateBase<T>
     {
     }
 
-    public override void runState()
+    public override void runState(float delta)
     {
-        m_actions[m_curAction].update();
+        m_actions[m_curAction].update(delta);
 
         if (m_actions[m_curAction].isDone())
         {

@@ -6,12 +6,6 @@ public class InMenuHUD : MonoBehaviour {
 	public GameObject			startButton;
 
 
-	
-	public void init()
-	{
-		//startButton.SetActive(false);
-	}
-
 	public void SetActive(bool isActive)
 	{
 		startButton.SetActive(isActive);
@@ -27,10 +21,6 @@ public class InMenuHUD : MonoBehaviour {
 		return startButton.activeInHierarchy;
 	}
 
-    public void pressStartButton()
-    {
-        Debug.Log("Start button pressed");
-    }
 
 
 

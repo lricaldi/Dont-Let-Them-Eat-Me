@@ -37,7 +37,7 @@ public class FadePanel : MonoBehaviour
     {
         if (m_fadeType != FadeEnum.FE_DONE)
         {
-            m_fadeAction.update();
+            m_fadeAction.update(Time.deltaTime);
             if (m_fadeAction.isDone())
             {
                 if(m_fadeType == FadeEnum.FE_IN)

@@ -13,7 +13,8 @@ public class ShineItemState : StateBaseWithActions<AttackItem>
 
     public override void initState()
     {
-        m_refObj.setLayer("foreground", 1);
+        m_refObj.setLayer("foreground", 10);
+        
       
         m_refObj.getLaunchEffect().GetComponent<Animator>().SetTrigger("triggerEffect");
         m_curAction = (int)ActionEnum.AE_WAIT;

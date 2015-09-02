@@ -54,7 +54,7 @@ public class BeltItem : MonoBehaviour
    	void Start () 
     {
         getNewItem();
-    }
+   }
 
     public void getNewItem()
     {
@@ -64,10 +64,6 @@ public class BeltItem : MonoBehaviour
 
         m_itemName      = m_itemView.m_itemName;
         m_effectType    = m_itemView.m_effectType;
-    }
-    public void OnMouseDown()
-    {
-        Debug.Log("Belt Item touched");
     }
 
 }

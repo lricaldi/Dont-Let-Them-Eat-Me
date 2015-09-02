@@ -40,7 +40,7 @@ public class TargetCrumb : MonoBehaviour
     {
         if (m_isTriggered)
         {
-            m_fallAction.update();
+            m_fallAction.update(Time.deltaTime);
 
             m_timer += Time.deltaTime;
 

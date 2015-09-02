@@ -84,11 +84,13 @@ public class ItemsBelt : ObjectWithStates<ItemsBelt> {
         }
     }
 
+   
+
     protected override void init () 
     {
-        m_scales            = new Vector2[] { Vector2.one, new Vector2(0.95f, 0.95f), new Vector2(0.9f, 0.9f), new Vector2(0.85f, 0.85f),
-                                                new Vector2(0.85f, 0.85f), new Vector2(0.9f,0.9f), new Vector2(0.95f,0.95f) };
-        m_layerOrderAtPos   = new int   [] {4,3,2,1,1,2,3};
+        m_scales            = new Vector2[] { Vector2.one, new Vector2(0.93f, 0.93f), new Vector2(0.87f, 0.87f), new Vector2(0.8f, 0.8f),
+                                                new Vector2(0.8f, 0.8f), new Vector2(0.87f,0.87f), new Vector2(0.93f,0.93f) };
+        m_layerOrderAtPos   = new int   [] {8,6,4,2,2,4,6};
         m_inputWord         = "";
         m_focusItem         = FOCUS_POS_INDEX;
 

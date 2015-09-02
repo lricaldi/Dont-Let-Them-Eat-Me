@@ -30,17 +30,8 @@ public class HashIDs : MonoBehaviour {
     [HideInInspector]
     public int eat;
     
-
-	//public int hashName; 
-	
-
-
-
-
 	public void Awake ()
 	{
-        //Debug.Log("HashIds init");
-
         happy       = Animator.StringToHash("happy");
         attacked    = Animator.StringToHash("attacked");
         ok          = Animator.StringToHash("ok");

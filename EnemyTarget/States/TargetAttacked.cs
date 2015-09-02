@@ -37,7 +37,7 @@ public class TargetAttacked : StateBaseWithActions<EnemyTarget>
    
     }
     
-    public override void runState()
+    public override void runState(float delta)
     {
         if (m_refObj.getNumAttachedEnemies() <= 0)
         {
@@ -58,8 +58,8 @@ public class TargetAttacked : StateBaseWithActions<EnemyTarget>
         }
         else
         {
-            m_timer += Time.deltaTime;
-            m_timerCrumbs += Time.deltaTime;
+            m_timer += delta;
+            m_timerCrumbs += delta;
 
             if (m_timerCrumbs > CRUMB_INTERVAL)
             {
@@ -78,7 +78,7 @@ public class TargetAttacked : StateBaseWithActions<EnemyTarget>
                 m_timer         = 0;
             }
         }
-        base.runState();
+        base.runState(delta);
     }
 
     public override void endState()

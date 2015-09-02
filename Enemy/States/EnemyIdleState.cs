@@ -3,7 +3,7 @@ using System.Collections;
 
 public class EnemyIdleState : StateBaseWithActions<Enemy>
 {
-    private const float NORMAL_MOVE_WAIT = 15;
+    private const float NORMAL_MOVE_WAIT = 20;
     private const float RANDOM_MOVE_RANGE = 5;
     private const float FAST_MOVE_WAIT = 0.05f;
 
@@ -21,8 +21,9 @@ public class EnemyIdleState : StateBaseWithActions<Enemy>
 
     public override void initState()
     {
-
+        m_refObj.setUpdateSpeed(0.03f);
         ((waitTime)m_actions[(int)ActionEnum.AE_WAIT]).setup(m_refObj.isFastMoveNode() ? FAST_MOVE_WAIT : NORMAL_MOVE_WAIT);
+        
         m_targetWaiting = false;
         m_curAction     = (int)ActionEnum.AE_ANIMATE;
         
@@ -32,8 +33,13 @@ public class EnemyIdleState : StateBaseWithActions<Enemy>
     
     protected override bool actionDone()
     {
-        if (m_curAction == (int)ActionEnum.AE_WAIT)
+        if (m_curAction == (int)ActionEnum.AE_ANIMATE)
         {
+            m_refObj.setUpdateSpeed(m_refObj.isFastMoveNode() ? FAST_MOVE_WAIT : NORMAL_MOVE_WAIT);
+        }
+        else if (m_curAction == (int)ActionEnum.AE_WAIT)
+        {
+            m_refObj.setUpdateSpeed(0.03f);
             m_curAction--;
             ((waitTime)m_actions[(int)ActionEnum.AE_WAIT]).setup(FAST_MOVE_WAIT);
             

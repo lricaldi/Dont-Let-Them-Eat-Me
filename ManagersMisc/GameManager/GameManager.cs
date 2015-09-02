@@ -6,7 +6,7 @@ using System.Collections;
 public class GameManager : MonoBehaviour 
 {
 
-    public enum GameManagerState { GMS_IntroMenu, GMS_InGame, GMS_AdShow, GMS_Length }
+    public enum GameManagerState { GMS_Logo, GMS_IntroMenu, GMS_InGame, GMS_AdShow, GMS_Length }
 
     public static GameManager   instance = null;
     StateBase<GameManager>[]    m_gameStates;
@@ -26,29 +26,37 @@ public class GameManager : MonoBehaviour
 	{
 		m_gameStates                                        = new StateBase<GameManager>[(int)GameManagerState.GMS_Length];
 
+        m_gameStates[(int)GameManagerState.GMS_Logo]        = new LogoScene();
 		m_gameStates[(int)GameManagerState.GMS_IntroMenu]	= new IntroMenuScene();
 		m_gameStates[(int)GameManagerState.GMS_InGame]	    = new InGameScene();
 		m_gameStates[(int)GameManagerState.GMS_AdShow]	    = new LevelOutroScene();
 
-        QualitySettings.vSyncCount = 0;
-        Application.targetFrameRate = 60;
+        QualitySettings.vSyncCount = 1;
+        Application.targetFrameRate = 30;
         setNextState();
 	}
 
 
 	void Update()
 	{
-		m_gameStates[m_curState].updateState();
+		m_gameStates[m_curState].updateState(Time.deltaTime);
 	}
 
     private void setNextState()
     {
-        if (Application.loadedLevelName.Contains("Game"))
+        if (Application.loadedLevelName.Contains("Logo"))
         {
+            QualitySettings.vSyncCount = 1;
+            m_curState = (int)GameManagerState.GMS_Logo;
+        }
+        else if (Application.loadedLevelName.Contains("Game"))
+        {
+            QualitySettings.vSyncCount = 0;
             m_curState = (int)GameManagerState.GMS_InGame;
         }
         else if (Application.loadedLevelName.Equals("Menu"))
         {
+            QualitySettings.vSyncCount = 1;
             m_curState = (int)GameManagerState.GMS_IntroMenu;
         }
        
@@ -58,7 +66,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("invalid level");
+            // Invalid level.
         }
     }
 	void OnLevelWasLoaded(int level)

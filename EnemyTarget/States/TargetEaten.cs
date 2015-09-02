@@ -18,8 +18,8 @@ public class TargetEaten : StateBaseWithActions<EnemyTarget>
     public override void initState()
     {
         m_refObj.GetComponent<CircleCollider2D>().enabled = false;
-        SoundManager.instance.PlaySound(SoundManager.instance.m_targetDead, false, 1);
         m_refObj.killAttached(BeltItem.EffectTypeEnum.ETE_NORMAL);
+        SoundManager.instance.PlaySound(SoundManager.instance.m_targetDead, false, 0);
         m_curAction = (int)ActionEnum.AE_ANIMATE;
         curStep     = StateStep.SSRuning;
     }

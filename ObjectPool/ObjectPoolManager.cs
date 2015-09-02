@@ -166,7 +166,7 @@ public class ObjectPoolManager : MonoBehaviour
 		else
 		{
 			// This object was not created through the ObjectPoolManager, give a warning and destroy it the "old way"
-			Debug.Log( "Destroying non-pooled object " + obj.name );
+			//Debug.Log( "Destroying non-pooled object " + obj.name );
 			Object.Destroy( obj );
 		}
 	}

@@ -55,7 +55,7 @@ public class InstanceFactory : MonoBehaviour
         EnemyView randEnemy = getRandomEnemy();
         EnemyView returnVal = ObjectPoolManager.CreatePooled(randEnemy.gameObject, position, rotQuat).GetComponent<EnemyView>();
 
-        returnVal.GetComponent<SpriteRenderer>().sortingOrder       = 1;
+        returnVal.GetComponent<SpriteRenderer>().sortingOrder       = 2;
         returnVal.GetComponent<SpriteRenderer>().sortingLayerName   = "Default";
 
         return returnVal;
@@ -68,7 +68,7 @@ public class InstanceFactory : MonoBehaviour
         ItemView randItemView   = getRandomItem();
         ItemView returnVal      = ObjectPoolManager.CreatePooled(randItemView.gameObject, position, rotQuat).GetComponent<ItemView>();
 
-        returnVal.GetComponent<SpriteRenderer>().sortingOrder       = 1;
+        returnVal.GetComponent<SpriteRenderer>().sortingOrder       = 4;
         returnVal.GetComponent<SpriteRenderer>().sortingLayerName   = "foreground";
 
         return returnVal;

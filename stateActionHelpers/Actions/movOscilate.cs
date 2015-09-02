@@ -57,7 +57,7 @@ public class movOscilate : StateActionBase
         m_done = true;
     }
 
-	public override void update()
+    public override void update(float delta)
 	{
 
        
@@ -72,8 +72,8 @@ public class movOscilate : StateActionBase
 
         if( m_horzOcillation != 0)
         {
-          
-            m_horzTime += m_horzSpeed * Time.deltaTime;
+
+            m_horzTime += m_horzSpeed * delta;
             if (m_horzTime > 1)
             {
                 m_horzTime = 1;
@@ -90,8 +90,8 @@ public class movOscilate : StateActionBase
 
         if(m_vertOcillation != 0)
         {
-            
-			m_vertTime += m_vertSpeed * Time.deltaTime;
+
+            m_vertTime += m_vertSpeed * delta;
 
             if (m_vertTime > 1)
             {

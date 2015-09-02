@@ -38,7 +38,7 @@ public class pathColumn
 
 public class PathPanel : MonoBehaviour 
 {
-    public  const int NUM_COLS      = 5;
+    public  const int NUM_COLS      = 6;
     public  const int NUM_ROWS      = 6;
     private const int FAST_MOVE_ROW = 4;
 

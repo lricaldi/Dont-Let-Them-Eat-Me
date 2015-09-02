@@ -59,6 +59,8 @@ public class AttackItem : ObjectWithStates<AttackItem>
 
         m_effectType    = effectType;
         m_itemFired     = false;
+
+        //m_itemView.showEffectBG(false);
     }
 
     protected override void initStates()
@@ -73,11 +75,11 @@ public class AttackItem : ObjectWithStates<AttackItem>
         m_curState                                  = (int) StateEnum.SE_SHINE;
     }
 
-    protected override void update()
+    protected override void update(float delta)
     {
         if (m_itemFired && m_states !=null)
         {
-            base.update();
+            base.update(delta);
         }
     }
 
@@ -108,6 +110,7 @@ public class AttackItem : ObjectWithStates<AttackItem>
         m_itemView.GetComponent<Transform>().SetParent(null);
         InstanceFactory.instance.freeItemView(m_itemView);
         m_itemFired = false;
+        //m_itemView.showEffectBG(true);
         InstanceFactory.instance.freeAttackItem(this);
     }
 
@@ -124,8 +127,10 @@ public class AttackItem : ObjectWithStates<AttackItem>
         }
     }
 
-    public BeltItem.EffectTypeEnum getType()
+    public BeltItem.EffectTypeEnum getEffectType()
     {
         return m_itemView.m_effectType;
     }
+
+    
 }

@@ -32,11 +32,11 @@ public class TypeText : StateActionBase
         base.reset();
 	}
 
-    public override void update()
+    public override void update(float delta)
     {
         if (!m_done)
         {
-            m_timer += Time.deltaTime;
+            m_timer += delta;
             if (m_timer > m_typeSpeed)
             {
                 if (m_curChar < m_textToType.Length)

@@ -21,13 +21,13 @@ public class TargetOk : StateBaseWithActions<EnemyTarget>
         curStep     = StateStep.SSRuning;
     }
     
-    public override void runState()
+    public override void runState(float delta)
     {
         if (m_refObj.getNumAttachedEnemies() > 0)
         {
             m_actions[m_curAction].forceDone();
         }
-        base.runState();
+        base.runState(delta);
     }
 
     public override void endState()

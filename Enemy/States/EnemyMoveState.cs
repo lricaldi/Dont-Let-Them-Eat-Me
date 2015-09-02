@@ -13,6 +13,7 @@ public class EnemyMoveState : StateBaseWithActions<Enemy>
 
     public override void initState()
     {
+        m_refObj.setUpdateSpeed(0.03f);
         ((movAtoB)m_actions[(int)ActionEnum.AE_MOVE]).setup(m_refObj.gameObject,
                                                                 m_refObj.getCurNodePos(),
                                                                 m_refObj.getNextNodePos(),
@@ -23,6 +24,7 @@ public class EnemyMoveState : StateBaseWithActions<Enemy>
  
     public override void endState()
     {
+
         m_refObj.moveToNextNode();
         m_refObj.setCurrentState(Enemy.StateEnum.SE_IDLE);
         resetState();

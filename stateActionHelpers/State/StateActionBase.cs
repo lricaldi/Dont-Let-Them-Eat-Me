@@ -12,7 +12,7 @@ public class StateActionBase
 
     public virtual void forceEndAction() {m_done = true;}
     
-	public virtual void update() {}
+	public virtual void update(float delta) {}
 	public virtual void reset()  { m_done = false; }
 	
 }

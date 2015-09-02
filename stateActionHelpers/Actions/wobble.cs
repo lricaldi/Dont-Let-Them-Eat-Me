@@ -27,10 +27,10 @@ public class wobble : StateActionBase
         
         m_done = false;
 	}
-    	
-	public override void update()
+
+    public override void update(float delta)
 	{
-        m_curTime += m_speed * Time.deltaTime;
+        m_curTime += m_speed * delta;
 
         if (m_curTime > 1)
         {

@@ -21,7 +21,6 @@ public class StateBase <T>
 
 	public virtual void resetState()
 	{
-		//Debug.Log ("resetBase ");
 		curStep = StateStep.SSInit;
 	}
 
@@ -30,7 +29,7 @@ public class StateBase <T>
 		//Debug.Log ("initBase ");
 	}
 
-	public virtual void runState()
+	public virtual void runState(float delta)
 	{
 		//Debug.Log ("runBase ");
 	}
@@ -40,15 +39,15 @@ public class StateBase <T>
 		//Debug.Log ("endBase ");
 	}
 
-	public void updateState()
+	public void updateState(float delta)
 	{
 		switch (curStep)
 		{
+        case StateStep.SSRuning:
+            runState(delta);
+            break;
 		case StateStep.SSInit:
 			initState();
-			break;
-		case StateStep.SSRuning:
-			runState();
 			break;
 		case StateStep.SSEnd:
 			endState();
